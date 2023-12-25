@@ -1,6 +1,6 @@
 import { createElement } from '../render';
-import { eventTypes } from '../const';
-import { capitalizeFirstLetter } from '../utils';
+import { eventTypes, FULL_DATE_FORMAT } from '../const';
+import { capitalizeFirstLetter, humanizeDate } from '../utils';
 
 function createEditPointFormTemplate(editingTrip, destinations, offers) {
   const eventTypeItems = eventTypes.map((eventType) => (`
@@ -16,12 +16,16 @@ function createEditPointFormTemplate(editingTrip, destinations, offers) {
     <option value=${destination.name}></option>
   `)).join('');
 
+  const dateFrom = humanizeDate(editingTrip.dateFrom, FULL_DATE_FORMAT);
+  const dateTo = humanizeDate(editingTrip.dateTo, FULL_DATE_FORMAT);
+
   const offerItems = offers.map((offer) => {
     const offerTitle = offer.title.toLowerCase();
+    const isChecked = editingTrip.offers.includes(offer.id) ? 'checked' : '';
 
     return (`
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-${offerTitle}" checked>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-${offerTitle}" ${isChecked}>
         <label class="event__offer-label" for="event-offer-${offerTitle}-1">
           <span class="event__offer-title">${offerTitle}</span>
           &plus;&euro;&nbsp;
@@ -61,10 +65,10 @@ function createEditPointFormTemplate(editingTrip, destinations, offers) {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${editingTrip.dateFrom}>
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${dateFrom}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${editingTrip.dateTo}>
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${dateTo}>
         </div>
 
         <div class="event__field-group  event__field-group--price">

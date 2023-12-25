@@ -8,11 +8,9 @@ export default class EditPointModel {
   get trip() {
     const trip = getRandomTrip();
     const destinationById = mockDestinations.find((destination) => destination.id === trip.destination);
-    const offerByType = mockOffers.find((offer) => offer.type === trip.type);
 
     const tripWithAdditionalData = {...trip};
     tripWithAdditionalData.destination = destinationById;
-    tripWithAdditionalData.offers = offerByType.offers.filter((offer) => trip.offers.includes(offer.id));
 
     return tripWithAdditionalData;
   }
