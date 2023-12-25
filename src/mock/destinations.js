@@ -1,5 +1,3 @@
-import { getRandomArrayElement } from '../utils.js';
-
 const mockDestinations = [
   {
     id: '1',
