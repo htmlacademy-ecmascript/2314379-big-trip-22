@@ -8,17 +8,18 @@ export default class TripEventsListPresenter {
   tripEventsList = new TripEventsList();
   addPointForm = new AddPointForm();
 
-  constructor({ container, tripModel, editPointModel }) {
+  constructor({ container, destinationsModel, offersModel, tripsModel }) {
     this.container = container;
-    this.tripModel = tripModel;
-    this.editPointModel = editPointModel;
+    this.destinationsModel = destinationsModel;
+    this.offersModel = offersModel;
+    this.tripsModel = tripsModel;
   }
 
   init() {
-    const tripsList = [...this.tripModel.getTrips()];
-    const editingTrip = {...this.editPointModel.getTrip()};
-    const destinations = [...this.editPointModel.getDestinations()];
-    const offers = [...this.editPointModel.getOffers()];
+    const tripsList = this.tripsModel.trips;
+    const editingTrip = this.tripsModel.getRandomTrip();
+    const destinations = this.destinationsModel.destinations;
+    const offers = this.offersModel.getOffersByType(editingTrip.type);
 
     render(this.tripEventsList, this.container);
     render(new EditPointForm({ editingTrip, destinations, offers }), this.tripEventsList.getElement());

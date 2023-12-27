@@ -1,20 +1,27 @@
-import { getRandomTrip } from '../mock/trip-events';
 import { mockDestinations } from '../mock/destinations';
 import { mockOffers } from '../mock/offers';
+import { getRandomTrip } from '../mock/trips';
+import { TRIP_COUNT } from '../const';
 
-const TRIP_COUNT = 4;
+export default class MockService {
+  destinations = [];
+  offers = [];
+  trips = [];
 
-export default class TripModel {
+  constructor() {
+    this.destinations = mockDestinations;
+    this.offers = mockOffers;
+    this.trips = this.getRandomTrips();
+  }
 
-  // Собираем все необходимые данные для дальнейшей отрисовки
-  get trips() {
+  getRandomTrips() {
     const trips = Array.from({ length: TRIP_COUNT }, getRandomTrip);
-    const destinationsByIdMap = mockDestinations.reduce((acc, destination) => {
+    const destinationsByIdMap = this.destinations.reduce((acc, destination) => {
       acc[destination.id] = destination;
       return acc;
     }, {});
 
-    const offersByTypeMap = mockOffers.reduce((acc, offer) => {
+    const offersByTypeMap = this.offers.reduce((acc, offer) => {
       acc[offer.type] = [...offer.offers];
       return acc;
     }, {});
@@ -31,9 +38,5 @@ export default class TripModel {
     }, []);
 
     return tripsWithAdditionalData;
-  }
-
-  getTrips() {
-    return this.trips;
   }
 }

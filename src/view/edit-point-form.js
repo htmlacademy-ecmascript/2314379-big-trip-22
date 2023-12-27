@@ -1,9 +1,9 @@
 import { createElement } from '../render';
-import { eventTypes, FULL_DATE_FORMAT } from '../const';
+import { EVENT_TYPES, FULL_DATE_FORMAT } from '../const';
 import { capitalizeFirstLetter, humanizeDate } from '../utils';
 
 function createEditPointFormTemplate(editingTrip, destinations, offers) {
-  const eventTypeItems = eventTypes.map((eventType) => (`
+  const eventTypeItems = EVENT_TYPES.map((eventType) => (`
     <div class="event__type-item">
       <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${eventType}>
       <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${capitalizeFirstLetter(eventType)}</label>
@@ -21,7 +21,7 @@ function createEditPointFormTemplate(editingTrip, destinations, offers) {
 
   const offerItems = offers.map((offer) => {
     const offerTitle = offer.title.toLowerCase();
-    const isChecked = editingTrip.offers.includes(offer.id) ? 'checked' : '';
+    const isChecked = editingTrip.offers.find((tripOffer) => tripOffer.id === offer.id) ? 'checked' : '';
 
     return (`
       <div class="event__offer-selector">

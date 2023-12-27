@@ -1,10 +1,10 @@
 import { getRandomArrayElement } from '../utils.js';
-import { eventTypes } from '../const.js';
+import { EVENT_TYPES } from '../const.js';
 
 const mockTripEvents = [
   {
     id: '1',
-    type: getRandomArrayElement(eventTypes),
+    type: getRandomArrayElement(EVENT_TYPES),
     destination: '3',
     dateFrom: '2023-04-04T20:00:00.845Z',
     dateTo: '2023-04-04T23:30:00.845Z',
@@ -14,7 +14,7 @@ const mockTripEvents = [
   },
   {
     id: '2',
-    type: getRandomArrayElement(eventTypes),
+    type: getRandomArrayElement(EVENT_TYPES),
     destination: '3',
     dateFrom: '2023-04-05T03:00:00.845Z',
     dateTo: '2023-04-05T03:30:00.845Z',
@@ -24,7 +24,7 @@ const mockTripEvents = [
   },
   {
     id: '3',
-    type: getRandomArrayElement(eventTypes),
+    type: getRandomArrayElement(EVENT_TYPES),
     destination: '3',
     dateFrom: '2023-04-10T13:00:00.845Z',
     dateTo: '2023-04-10T13:30:00.845Z',
@@ -34,7 +34,7 @@ const mockTripEvents = [
   },
   {
     id: '4',
-    type: getRandomArrayElement(eventTypes),
+    type: getRandomArrayElement(EVENT_TYPES),
     destination: '3',
     dateFrom: '2023-04-20T20:00:00.845Z',
     dateTo: '2023-04-20T22:00:00.845Z',
