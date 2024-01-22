@@ -1,8 +1,8 @@
-import { createElement } from '../render';
 import { EVENT_TYPES, FULL_DATE_FORMAT } from '../const';
 import { capitalizeFirstLetter, humanizeDate } from '../utils';
+import AbstractView from '../framework/view/abstract-view.js';
 
-function createEditPointFormTemplate(editingTrip, destinations, offers) {
+function createEditPointFormTemplate({ editingTrip, destinations, offers }) {
   const eventTypeItems = EVENT_TYPES.map((eventType) => (`
     <div class="event__type-item">
       <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${eventType}>
@@ -103,26 +103,29 @@ function createEditPointFormTemplate(editingTrip, destinations, offers) {
   `);
 }
 
-export default class EditPointForm {
-  constructor({ editingTrip, destinations, offers }) {
-    this.editingTrip = editingTrip;
-    this.destinations = destinations;
-    this.offers = offers;
+export default class EditPointForm extends AbstractView {
+  #editingTrip = null;
+  #destinations = null;
+  #offers = null;
+  #onCloseClick = null;
+  #onFormSubmit = null;
+
+  constructor({ editingTrip, destinations, offers, onCloseClick, onFormSubmit }) {
+    super();
+    this.#editingTrip = editingTrip;
+    this.#destinations = destinations;
+    this.#offers = offers;
+    this.#onCloseClick = onCloseClick;
+    this.#onFormSubmit = onFormSubmit;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#onFormSubmit);
   }
 
-  getTemplate() {
-    return createEditPointFormTemplate(this.editingTrip, this.destinations, this.offers);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEditPointFormTemplate({
+      editingTrip: this.#editingTrip,
+      destinations: this.#destinations,
+      offers: this.#offers,
+    });
   }
 }
