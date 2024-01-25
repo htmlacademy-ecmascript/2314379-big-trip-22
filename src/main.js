@@ -23,5 +23,7 @@ const tripEventsListPresenter = new TripEventsListPresenter({ container: tripEve
 
 headerPresenter.init();
 filterPresenter.init();
-sortPresenter.init();
+if (tripsModel.trips.length > 0) {
+  sortPresenter.init();
+}
 tripEventsListPresenter.init();
