@@ -121,7 +121,7 @@ const EMPTY_LIST_MESSAGE_BY_FILTERS_MAP = {
   [FILTERS.Future]: 'There are no future events now',
   [FILTERS.Present]: 'There are no present events now',
   [FILTERS.Past]: 'There are no past events now',
-}
+};
 
 export {
   EVENT_TYPES,

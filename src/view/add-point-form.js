@@ -3,14 +3,14 @@ import { EVENT_TYPES, OFFER_VARIANTS } from '../const.js';
 import { capitalizeFirstLetter } from '../utils.js';
 
 function createAddPointFormTemplate() {
-  const eventItems = EVENT_TYPES.map(eventType => (`
+  const eventItems = EVENT_TYPES.map((eventType) => (`
     <div class="event__type-item">
       <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}">
       <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${capitalizeFirstLetter(eventType)}</label>
     </div>
   `)).join('');
 
-  const offerItems = OFFER_VARIANTS.map(variant => (`
+  const offerItems = OFFER_VARIANTS.map((variant) => (`
     <div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${variant.type}-1" type="checkbox" name="event-offer-${variant.type}" ${variant.state}>
       <label class="event__offer-label" for="event-offer-${variant.type}-1">

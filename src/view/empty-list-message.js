@@ -7,7 +7,7 @@ function createEmptyListMessageTemplate(message) {
 
 export default class EmptyListMessage extends AbstractView {
   get template() {
-    const checkedFilter = FILTER_VARIANTS.find(filter => filter.state === 'checked');
+    const checkedFilter = FILTER_VARIANTS.find((filter) => filter.state === 'checked');
     const message = EMPTY_LIST_MESSAGE_BY_FILTERS_MAP[checkedFilter.type];
     return createEmptyListMessageTemplate(message);
   }
