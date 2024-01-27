@@ -1,16 +1,17 @@
 import AbstractView from '../framework/view/abstract-view.js';
+import { MAIN_EVENT } from '../const.js';
 
 function createTripInfoTemplate() {
   return (`
     <section class="trip-main__trip-info  trip-info">
         <div class="trip-info__main">
-        <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
+        <h1 class="trip-info__title">${MAIN_EVENT.label}</h1>
 
-        <p class="trip-info__dates">18&nbsp;&mdash;&nbsp;20 Mar</p>
+        <p class="trip-info__dates">${MAIN_EVENT.dates}</p>
         </div>
 
         <p class="trip-info__cost">
-        Total: &euro;&nbsp;<span class="trip-info__cost-value">1230</span>
+        Total: &${MAIN_EVENT.currency};&nbsp;<span class="trip-info__cost-value">${MAIN_EVENT.price}</span>
         </p>
     </section>
   `);

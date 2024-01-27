@@ -4,6 +4,7 @@ import TripEventsList from '../view/trip-events-list';
 import AddPointForm from '../view/add-point-form';
 import EditPointForm from '../view/edit-point-form';
 import { replace } from '../framework/render';
+import EmptyListMessage from '../view/empty-list-message';
 
 export default class TripEventsListPresenter {
   #tripEventsList = new TripEventsList();
@@ -25,9 +26,19 @@ export default class TripEventsListPresenter {
 
     render(this.#tripEventsList, this.#container);
 
+    if (tripsList.length === 0) {
+      this.#renderEmptyListMessage();
+      return;
+    }
+
     tripsList.forEach((trip) => {
       this.#renderTrip(trip);
     });
+  }
+
+  #renderEmptyListMessage() {
+    const emptyListMessageComponent = new EmptyListMessage();
+    render(emptyListMessageComponent, this.#tripEventsList.element);
   }
 
   #renderTrip(trip) {
