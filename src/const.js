@@ -9,7 +9,6 @@ const EVENT_TYPES = [
   'sightseeing',
   'restaurant',
 ];
-const TRIP_COUNT = 4;
 
 const FULL_DATE_FORMAT = 'YYYY-MM-DD HH:MM';
 const MONTH_FORMAT = 'MMM';
@@ -123,9 +122,13 @@ const EMPTY_LIST_MESSAGE_BY_FILTERS_MAP = {
   [FILTERS.Past]: 'There are no past events now',
 };
 
+const TRIP_MODE = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+}
+
 export {
   EVENT_TYPES,
-  TRIP_COUNT,
   FULL_DATE_FORMAT,
   HOURS_MINUTES_FORMAT,
   MINUTES_FORMAT,
@@ -137,4 +140,5 @@ export {
   FILTER_VARIANTS,
   OFFER_VARIANTS,
   EMPTY_LIST_MESSAGE_BY_FILTERS_MAP,
+  TRIP_MODE,
 };

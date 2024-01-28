@@ -3,7 +3,7 @@ import { MONTH_FORMAT, MONTH_DAY_FORMAT, HOURS_MINUTES_FORMAT } from '../const';
 import AbstractView from '../framework/view/abstract-view.js';
 
 function createTripEventTemplate(trip) {
-  const { type, destination, dateFrom, dateTo, basePrice, offers } = trip;
+  const { type, destination, dateFrom, dateTo, basePrice, offers, isFavorite } = trip;
 
   const tripDate = `${humanizeDate(dateFrom, MONTH_FORMAT).toUpperCase()} ${humanizeDate(dateFrom, MONTH_DAY_FORMAT)}`;
   const tripTitle = `${capitalizeFirstLetter(type)} ${destination.name}`;
@@ -40,7 +40,7 @@ function createTripEventTemplate(trip) {
         <ul class="event__selected-offers">
           ${offersList}
         </ul>
-        <button class="event__favorite-btn event__favorite-btn--active" type="button">
+        <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
             <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -57,12 +57,15 @@ function createTripEventTemplate(trip) {
 export default class TripEvent extends AbstractView {
   #trip = null;
   #onEditClick = null;
+  #onFavoriteClick = null;
 
-  constructor({trip, onEditClick}) {
+  constructor({trip, onEditClick, onFavoriteClick}) {
     super();
     this.#trip = trip;
     this.#onEditClick = onEditClick;
+    this.#onFavoriteClick = onFavoriteClick;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#onFavoriteClick);
   }
 
   get template() {

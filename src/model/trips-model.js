@@ -8,4 +8,12 @@ export default class TripsModel {
   getRandomTrip() {
     return getRandomArrayElement(this.trips);
   }
+
+  updateTripById(id, updatedTrip) {
+    this.trips = this.trips.map((trip) => trip.id === id ? updatedTrip : trip);
+  }
+
+  getTripById(id) {
+    return this.trips.find((trip) => trip.id === id);
+  }
 }
