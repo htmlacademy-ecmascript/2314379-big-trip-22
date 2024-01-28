@@ -125,7 +125,7 @@ const EMPTY_LIST_MESSAGE_BY_FILTERS_MAP = {
 const TRIP_MODE = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
-}
+};
 
 export {
   EVENT_TYPES,

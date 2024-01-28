@@ -58,10 +58,10 @@ export default class TripEventsListPresenter {
     this.#tripsModel.updateTripById(tripId, updatedTripData);
     const updatedTrip = this.#tripsModel.getTripById(tripId);
     this.#tripPresenters[tripId].init(updatedTrip);
-  }
+  };
 
   #handleTripModeChange = () => {
     const allPresentersArray = Object.values(this.#tripPresenters);
     allPresentersArray.forEach((presenter) => presenter.resetView());
-  }
+  };
 }

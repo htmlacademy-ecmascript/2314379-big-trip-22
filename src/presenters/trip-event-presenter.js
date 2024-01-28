@@ -52,7 +52,6 @@ export default class TripEventPresenter {
 
     if (this.#mode === TRIP_MODE.EDITING) {
       replace(this.#tripEditorComponent, prevEditorComponent);
-      return;
     }
 
   }
@@ -67,34 +66,34 @@ export default class TripEventPresenter {
   #tripEditHandler = () => {
     this.#replacePointToEditor();
     document.addEventListener('keydown', this.#escKeydownHandler);
-  }
+  };
 
   #formSubmitHandler = () => {
     this.#replaceEditorToPoint();
     document.removeEventListener('keydown', this.#escKeydownHandler);
-  }
+  };
 
   #replacePointToEditor = () => {
     replace(this.#tripEditorComponent, this.#tripComponent);
     this.#onModeChange();
     this.#mode = TRIP_MODE.EDITING;
-  }
+  };
 
   #replaceEditorToPoint = () => {
     replace(this.#tripComponent, this.#tripEditorComponent);
     this.#mode = TRIP_MODE.DEFAULT;
-  }
+  };
 
   #tripEditorCloseHandler = () => {
     this.#replaceEditorToPoint();
-  }
+  };
 
   #escKeydownHandler = (event) => {
     if (event.key !== 'Escape') {
       return;
     }
     this.#replaceEditorToPoint();
-  }
+  };
 
   #onTripFavoriteClick(trip) {
     this.#onDataChange(trip.id, {
