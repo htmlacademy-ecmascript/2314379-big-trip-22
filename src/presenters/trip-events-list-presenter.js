@@ -39,7 +39,7 @@ export default class TripEventsListPresenter {
 
     SORT_VARIANTS.forEach((variant) => {
       this.#renderTripSortType(variant);
-    })
+    });
 
     this.#renderTripsList();
   }
@@ -101,7 +101,7 @@ export default class TripEventsListPresenter {
     this.#tripsList = sortTripsListByType(this.#tripsList, type);
     this.#clearTripsList();
     this.#renderTripsList();
-  }
+  };
 
   #clearTripsList() {
     const allPresentersArray = Object.values(this.#tripPresenters);

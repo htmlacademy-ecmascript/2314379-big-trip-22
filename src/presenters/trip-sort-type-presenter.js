@@ -23,6 +23,6 @@ export default class TripSortTypePresenter {
   }
 
   #handleSortTypeClick = () => {
-    this.#onSortTypeChange(this.#sortTypeData.type)
-  }
+    this.#onSortTypeChange(this.#sortTypeData.type);
+  };
 }
