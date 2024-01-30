@@ -24,29 +24,37 @@ const MAIN_EVENT = {
   currency: 'euro',
 };
 
+const SORT_TYPES = {
+  Day: 'day',
+  Event: 'event',
+  Time: 'time',
+  Price: 'price',
+  Offers: 'offers',
+};
+
 const SORT_VARIANTS = [
   {
-    type: 'day',
+    type: SORT_TYPES.Day,
     state: 'checked',
     label: 'Day',
   },
   {
-    type: 'event',
+    type: SORT_TYPES.Event,
     state: 'disabled',
     label: 'Event',
   },
   {
-    type: 'time',
+    type: SORT_TYPES.Time,
     state: null,
     label: 'Time',
   },
   {
-    type: 'price',
+    type: SORT_TYPES.Price,
     state: null,
     label: 'Price',
   },
   {
-    type: 'offer',
+    type: SORT_TYPES.Offers,
     state: 'disabled',
     label: 'Offers',
   },
@@ -141,4 +149,5 @@ export {
   OFFER_VARIANTS,
   EMPTY_LIST_MESSAGE_BY_FILTERS_MAP,
   TRIP_MODE,
+  SORT_TYPES,
 };
