@@ -44,8 +44,4 @@ const mockTripEvents = [
   },
 ];
 
-function getRandomTrip() {
-  return getRandomArrayElement(mockTripEvents);
-}
-
-export { getRandomTrip };
+export { mockTripEvents };
