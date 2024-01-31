@@ -2,7 +2,7 @@ import { EVENT_TYPES, FULL_DATE_FORMAT } from '../const';
 import { capitalizeFirstLetter, humanizeDate } from '../utils';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
-function createEditPointFormTemplate({ state, destinations, availableOffers }) {
+function createEditPointFormTemplate({ state, availableDestinations, availableOffers }) {
   const { type, dateFrom, dateTo, offers, basePrice, destination } = state;
 
   const eventTypeItems = EVENT_TYPES.map((eventType) => (`
@@ -13,8 +13,8 @@ function createEditPointFormTemplate({ state, destinations, availableOffers }) {
   `)).join('');
 
   const eventName = capitalizeFirstLetter(type);
-  const destinationItems = destinations.map((destination) => (`
-    <option value="${destination.name}"></option>
+  const destinationItems = availableDestinations.map((availableDestination) => (`
+    <option value="${availableDestination.name}"></option>
   `)).join('');
 
   const humanizeDateFrom = humanizeDate(dateFrom, FULL_DATE_FORMAT);
@@ -36,9 +36,7 @@ function createEditPointFormTemplate({ state, destinations, availableOffers }) {
     `);
   }).join('');
 
-  const photoItems = destination.pictures.map((picture) => {
-      return `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`;
-  });
+  const photoItems = destination.pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`);
 
   return (`
     <form class="event event--edit" action="#" method="post">
@@ -137,7 +135,7 @@ export default class EditPointForm extends AbstractStatefulView {
   get template() {
     return createEditPointFormTemplate({
       state: this._state,
-      destinations: this.#destinations,
+      availableDestinations: this.#destinations,
       availableOffers: this.#offers,
     });
   }
@@ -157,7 +155,7 @@ export default class EditPointForm extends AbstractStatefulView {
     this.updateElement({
       type: event.target.value,
     });
-  }
+  };
 
   #handleDestinationChange = (event) => {
     event.preventDefault();
@@ -168,19 +166,19 @@ export default class EditPointForm extends AbstractStatefulView {
     this.updateElement({
       destination: selectedDestination,
     });
-  }
+  };
 
   #handleBasePriceChange = (event) => {
     event.preventDefault();
     this.updateElement({
       basePrice: event.target.value,
     });
-  }
+  };
 
   #handleOfferChange = (event) => {
     event.preventDefault();
     const checkedOffersCollection = this.element.querySelectorAll('.event__offer-checkbox:checked');
-    const checkedOffersIdsArray = [...checkedOffersCollection].map(offer => offer.dataset.id);
+    const checkedOffersIdsArray = [...checkedOffersCollection].map((offer) => offer.dataset.id);
     const checkedOffersArray = this.#offers.map((offer) => {
       if (checkedOffersIdsArray.includes(offer.id)) {
         return offer;
@@ -189,7 +187,7 @@ export default class EditPointForm extends AbstractStatefulView {
     this.updateElement({
       offers: checkedOffersArray,
     });
-  }
+  };
 
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
