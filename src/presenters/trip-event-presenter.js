@@ -1,7 +1,7 @@
 import { render } from '../render';
 import TripEvent from '../view/trip-event';
 import EditPointForm from '../view/edit-point-form';
-import { replace } from '../framework/render';
+import { replace, remove } from '../framework/render';
 import { TRIP_MODE } from '../const';
 
 export default class TripEventPresenter {
@@ -56,13 +56,6 @@ export default class TripEventPresenter {
 
   }
 
-  resetView() {
-    if (this.#mode === TRIP_MODE.DEFAULT) {
-      return;
-    }
-    this.#replaceEditorToPoint();
-  }
-
   #tripEditHandler = () => {
     this.#replacePointToEditor();
     document.addEventListener('keydown', this.#escKeydownHandler);
@@ -100,5 +93,17 @@ export default class TripEventPresenter {
       ...trip,
       isFavorite: !trip.isFavorite,
     });
+  }
+
+  resetView() {
+    if (this.#mode === TRIP_MODE.DEFAULT) {
+      return;
+    }
+    this.#replaceEditorToPoint();
+  }
+
+  removeTrip() {
+    remove(this.#tripComponent);
+    remove(this.#tripEditorComponent);
   }
 }
