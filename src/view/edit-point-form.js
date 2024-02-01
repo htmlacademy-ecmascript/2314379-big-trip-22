@@ -210,13 +210,13 @@ export default class EditPointForm extends AbstractStatefulView {
     this.updateElement({
       dateFrom,
     });
-  }
+  };
 
   #handleChangeDateTo = ([dateTo]) => {
     this.updateElement({
       dateTo,
     });
-  }
+  };
 
   #handleBasePriceChange = (event) => {
     event.preventDefault();
