@@ -21,11 +21,11 @@ export default class AddTripButtonPresenter {
   #handleButtonClick = () => {
     this.#onButtonClick();
   };
-  
+
   disableButton() {
     this.#buttonComponent.setDisabled(true);
   }
-  
+
   enableButton() {
     this.#buttonComponent.setDisabled(false);
   }

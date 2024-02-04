@@ -118,7 +118,7 @@ export default class TripEventsListPresenter {
         this.#tripsModel.deleteTrip(updateType, updatedTripData);
         break;
     }
-  }
+  };
 
   #handleModelEvent = (updateType, updatedTripData) => {
     switch (updateType) {
@@ -134,7 +134,7 @@ export default class TripEventsListPresenter {
         this.#renderTripsList();
         break;
     }
-  }
+  };
 
   #handleTripModeChange = () => {
     const allPresentersArray = Object.values(this.#tripPresenters);
@@ -185,14 +185,14 @@ export default class TripEventsListPresenter {
     this.#addButtonPresenter.enableButton();
     this.#addEventPresenter.removeComponent();
     this.#addEventPresenter = null;
-  }
+  };
 
   #handleEventAdd = (data) => {
     const newTripData = { ...data, id: String(this.#tripsModel.trips.length + 1) };
     this.#handleViewAction(ACTION_TYPE.ADD_TRIP, UPDATE_TYPE.MAJOR, newTripData);
     this.#addEventPresenter.removeComponent();
     this.#addEventPresenter = null;
-  }
+  };
 
   #handleAddFormOpen = () => {
     this.#addButtonPresenter.disableButton();
@@ -203,7 +203,7 @@ export default class TripEventsListPresenter {
     document.addEventListener('keydown', this.#escKeydownHandler);
     const allPresentersArray = Object.values(this.#tripPresenters);
     allPresentersArray.forEach((presenter) => presenter.resetView());
-  }
+  };
 
   #escKeydownHandler = (event) => {
     if (event.key !== 'Escape') {
@@ -211,5 +211,5 @@ export default class TripEventsListPresenter {
     }
     this.#handleAddFormCancel();
     document.removeEventListener('keydown', this.#escKeydownHandler);
-  }
+  };
 }

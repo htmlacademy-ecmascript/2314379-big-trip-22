@@ -68,7 +68,7 @@ export default class TripEventPresenter {
 
   #tripDeleteHandler = (trip) => {
     this.#onDataChange(ACTION_TYPE.DELETE_TRIP, UPDATE_TYPE.MINOR, trip);
-  }
+  };
 
   #replacePointToEditor = () => {
     replace(this.#tripEditorComponent, this.#tripComponent);

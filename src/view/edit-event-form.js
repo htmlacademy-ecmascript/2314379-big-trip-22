@@ -162,7 +162,7 @@ export default class EditEventForm extends AbstractStatefulView {
     event.preventDefault();
     const updatedTrip = EditEventForm.parseStateToTrip(this._state);
     this.#onFormSubmit(updatedTrip);
-  }
+  };
 
   #setDatepicker() {
     const dateFrom = this.element.querySelector('.event__input--time[name="event-start-time"]');

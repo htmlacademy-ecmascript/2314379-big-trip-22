@@ -40,5 +40,5 @@ export default class TripFilters extends AbstractView {
   #onFilterChange = () => {
     const selectedFilterType = this.element.querySelector('.trip-filters__filter-input:checked').value;
     this.#handleFilterChange(selectedFilterType);
-  }
+  };
 }

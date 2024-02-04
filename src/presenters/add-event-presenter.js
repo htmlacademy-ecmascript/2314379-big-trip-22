@@ -1,9 +1,6 @@
 import { render } from '../render';
-import TripEvent from '../view/trip-event';
-import EditEventForm from '../view/edit-event-form';
 import AddPointForm from '../view/add-event-form';
-import { replace, remove } from '../framework/render';
-import { TRIP_MODE, ACTION_TYPE, UPDATE_TYPE } from '../const';
+import { remove } from '../framework/render';
 
 export default class AddEventPresenter {
   #container = null;

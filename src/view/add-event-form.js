@@ -1,6 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EVENT_TYPES, FULL_DATE_FORMAT, DATEPICKER_DATE_FORMAT } from '../const';
 import { capitalizeFirstLetter, humanizeDate } from '../utils';
+import flatpickr from 'flatpickr';
 
 function createAddEventFormTemplate({ state, availableDestinations, availableOffers }) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = state;
@@ -13,8 +14,8 @@ function createAddEventFormTemplate({ state, availableDestinations, availableOff
   `)).join('');
 
   const eventName = capitalizeFirstLetter(type);
-  const destinationItems = availableDestinations.map((destination) => (`
-    <option value="${destination.name}"></option>
+  const destinationItems = availableDestinations.map((availableDestination) => (`
+    <option value="${availableDestination.name}"></option>
   `)).join('');
 
   const humanizeDateFrom = humanizeDate(dateFrom, FULL_DATE_FORMAT);
@@ -58,21 +59,21 @@ function createAddEventFormTemplate({ state, availableDestinations, availableOff
         </div>
 
         <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-${destination?.id ?? "0"}">
+          <label class="event__label  event__type-output" for="event-destination-${destination?.id ?? '0'}">
             ${eventName}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${destination?.id ?? "0"}" type="text" name="event-destination" value="${destination?.name ?? ""}" list="destination-list-${destination?.id ?? "0"}">
-          <datalist id="destination-list-${destination?.id ?? "0"}">
+          <input class="event__input  event__input--destination" id="event-destination-${destination?.id ?? '0'}" type="text" name="event-destination" value="${destination?.name ?? ''}" list="destination-list-${destination?.id ?? '0'}">
+          <datalist id="destination-list-${destination?.id ?? '0'}">
             ${destinationItems}
           </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${dateFrom ? humanizeDateFrom : ""}>
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${dateFrom ? humanizeDateFrom : ''}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${dateTo ? humanizeDateTo : ""}>
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${dateTo ? humanizeDateTo : ''}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -97,11 +98,11 @@ function createAddEventFormTemplate({ state, availableDestinations, availableOff
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destination?.description ?? ""}</p>
+          <p class="event__destination-description">${destination?.description ?? ''}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              ${photoItems ?? ""}
+              ${photoItems ?? ''}
             </div>
           </div>
         </section>
@@ -135,7 +136,7 @@ export default class AddEventForm extends AbstractStatefulView {
   }
 
   get template() {
-    return createAddEventFormTemplate({ 
+    return createAddEventFormTemplate({
       state: this._state,
       availableDestinations: this.#destinations,
       availableOffers: this.#offers,
@@ -160,7 +161,7 @@ export default class AddEventForm extends AbstractStatefulView {
     const trip = {...state};
     return trip;
   }
-  
+
   #handleFormSubmit = (event) => {
     event.preventDefault();
     const state = this._state;
@@ -202,7 +203,7 @@ export default class AddEventForm extends AbstractStatefulView {
       dateTo,
     });
   };
-  
+
   #setDatepicker() {
     const dateFrom = this.element.querySelector('.event__input--time[name="event-start-time"]');
     const dateTo = this.element.querySelector('.event__input--time[name="event-end-time"]');
