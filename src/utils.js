@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { MINUTES_IN_HOUR, MINUTES_FORMAT, SORT_TYPES, SORT_VARIANTS } from './const';
+import { MINUTES_IN_HOUR, MINUTES_FORMAT, SORT_TYPES, SORT_VARIANTS, FILTERS_TYPES } from './const';
 
 function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
@@ -61,14 +61,40 @@ export function sortByTime(trips) {
   return sortedTrips;
 }
 
-export function sortTripsListByType(tripsList, sortType) {
+export function sortTripsListByType(trips, sortType) {
   const sortsMap = {
-    [SORT_TYPES.Day]: () => sortByDate(tripsList),
-    [SORT_TYPES.Event]: () => tripsList,
-    [SORT_TYPES.Offers]: () => tripsList,
-    [SORT_TYPES.Price]: () => sortByPrice(tripsList),
-    [SORT_TYPES.Time]: () => sortByTime(tripsList),
+    [SORT_TYPES.Day]: () => sortByDate(trips),
+    [SORT_TYPES.Event]: () => trips,
+    [SORT_TYPES.Offers]: () => trips,
+    [SORT_TYPES.Price]: () => sortByPrice(trips),
+    [SORT_TYPES.Time]: () => sortByTime(trips),
   };
 
   return sortsMap[sortType]();
+}
+
+export function getFutureTrips(trips) {
+  const futureTrips = trips.filter((trip) => dayjs().isBefore(trip.dateFrom, 'day'));
+  return futureTrips;
+}
+
+export function getPastTrips(trips) {
+  const futureTrips = trips.filter((trip) => dayjs().isAfter(trip.dateTo, 'day'));
+  return futureTrips;
+}
+
+export function getPresentTrips(trips) {
+  const futureTrips = trips.filter((trip) => dayjs().isAfter(trip.dateFrom, 'day') && dayjs().isBefore(trip.dateTo, 'day'));
+  return futureTrips;
+}
+
+export function filterTrips(trips, filterType) {
+  const filterMap = {
+    [FILTERS_TYPES.Everything]: () => trips,
+    [FILTERS_TYPES.Future]: () => getFutureTrips(trips),
+    [FILTERS_TYPES.Past]: () => getPastTrips(trips),
+    [FILTERS_TYPES.Present]: () => getPresentTrips(trips),
+  };
+
+  return filterMap[filterType]();
 }

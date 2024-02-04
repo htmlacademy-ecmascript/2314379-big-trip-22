@@ -1,8 +1,8 @@
 import { render } from '../render';
 import TripEvent from '../view/trip-event';
-import EditPointForm from '../view/edit-point-form';
+import EditEventForm from '../view/edit-event-form';
 import { replace, remove } from '../framework/render';
-import { TRIP_MODE } from '../const';
+import { TRIP_MODE, ACTION_TYPE, UPDATE_TYPE } from '../const';
 
 export default class TripEventPresenter {
   #container = null;
@@ -28,16 +28,17 @@ export default class TripEventPresenter {
 
     this.#tripComponent = new TripEvent({
       trip,
-      onEditClick: this.#tripEditHandler,
-      onFavoriteClick: () => this.#onTripFavoriteClick(trip),
+      onEditClick: this.#handleTripEdit,
+      onFavoriteClick: () => this.#handleTripFavoriteClick(trip),
     });
 
-    this.#tripEditorComponent = new EditPointForm({
+    this.#tripEditorComponent = new EditEventForm({
       editingTrip: trip,
       destinations: this.#destinations,
       offers: this.#offers,
       onCloseClick: this.#tripEditorCloseHandler,
       onFormSubmit: this.#formSubmitHandler,
+      onTripDelete: () => this.#tripDeleteHandler(trip),
     });
 
     if (!prevComponent || !prevEditorComponent) {
@@ -53,18 +54,21 @@ export default class TripEventPresenter {
     if (this.#mode === TRIP_MODE.EDITING) {
       replace(this.#tripEditorComponent, prevEditorComponent);
     }
-
   }
 
-  #tripEditHandler = () => {
+  #handleTripEdit = () => {
     this.#replacePointToEditor();
     document.addEventListener('keydown', this.#escKeydownHandler);
   };
 
-  #formSubmitHandler = () => {
+  #formSubmitHandler = (trip) => {
+    this.#onDataChange(ACTION_TYPE.UPDATE_TRIP, UPDATE_TYPE.MINOR, trip);
     this.#replaceEditorToPoint();
-    document.removeEventListener('keydown', this.#escKeydownHandler);
   };
+
+  #tripDeleteHandler = (trip) => {
+    this.#onDataChange(ACTION_TYPE.DELETE_TRIP, UPDATE_TYPE.MINOR, trip);
+  }
 
   #replacePointToEditor = () => {
     replace(this.#tripEditorComponent, this.#tripComponent);
@@ -75,6 +79,7 @@ export default class TripEventPresenter {
   #replaceEditorToPoint = () => {
     replace(this.#tripComponent, this.#tripEditorComponent);
     this.#mode = TRIP_MODE.DEFAULT;
+    document.removeEventListener('keydown', this.#escKeydownHandler);
   };
 
   #tripEditorCloseHandler = () => {
@@ -88,8 +93,8 @@ export default class TripEventPresenter {
     this.#replaceEditorToPoint();
   };
 
-  #onTripFavoriteClick(trip) {
-    this.#onDataChange(trip.id, {
+  #handleTripFavoriteClick(trip) {
+    this.#onDataChange(ACTION_TYPE.UPDATE_TRIP, UPDATE_TYPE.MINOR, {
       ...trip,
       isFavorite: !trip.isFavorite,
     });

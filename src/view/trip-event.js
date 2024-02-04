@@ -9,7 +9,7 @@ function createTripEventTemplate(trip) {
   const tripTitle = `${capitalizeFirstLetter(type)} ${destination.name}`;
   const timeFrom = humanizeDate(dateFrom, HOURS_MINUTES_FORMAT);
   const timeTo = humanizeDate(dateTo, HOURS_MINUTES_FORMAT);
-  const offersList = offers.map((offer) => (`
+  const offersList = offers?.map((offer) => (`
     <li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
