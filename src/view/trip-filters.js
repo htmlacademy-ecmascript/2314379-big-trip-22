@@ -1,11 +1,10 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { FILTER_VARIANTS } from '../const.js';
 
-function createTripsFiltersTemplate() {
-  const filterItems = FILTER_VARIANTS.map((variant) => (`
+function createTripsFiltersTemplate(filters) {
+  const filterItems = filters.map((filter) => (`
     <div class="trip-filters__filter">
-      <input id="filter-${variant.type}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${variant.type}" ${variant.state}>
-      <label class="trip-filters__filter-label" for="filter-${variant.type}">${variant.label}</label>
+      <input id="filter-${filter.type}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter.type}" ${filter.state}>
+      <label class="trip-filters__filter-label" for="filter-${filter.type}">${filter.label}</label>
     </div>
   `)).join('');
 
@@ -20,7 +19,26 @@ function createTripsFiltersTemplate() {
 }
 
 export default class TripFilters extends AbstractView {
-  get template() {
-    return createTripsFiltersTemplate();
+  #filterModel = null;
+  #handleFilterChange = null;
+
+  constructor({ filterModel, handleFilterChange }) {
+    super();
+    this.#filterModel = filterModel;
+    this.#handleFilterChange = handleFilterChange;
+    this.element.addEventListener('change', this.#onFilterChange);
   }
+
+  get filters() {
+    return this.#filterModel.filters;
+  }
+
+  get template() {
+    return createTripsFiltersTemplate(this.filters);
+  }
+
+  #onFilterChange = () => {
+    const selectedFilterType = this.element.querySelector('.trip-filters__filter-input:checked').value;
+    this.#handleFilterChange(selectedFilterType);
+  };
 }

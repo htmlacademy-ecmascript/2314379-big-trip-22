@@ -4,7 +4,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createEditPointFormTemplate({ state, availableDestinations, availableOffers }) {
+function createEditEventFormTemplate({ state, availableDestinations, availableOffers }) {
   const { type, dateFrom, dateTo, offers, basePrice, destination } = state;
 
   const eventTypeItems = EVENT_TYPES.map((eventType) => (`
@@ -81,7 +81,7 @@ function createEditPointFormTemplate({ state, availableDestinations, availableOf
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice}>
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value=${basePrice}>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -113,23 +113,26 @@ function createEditPointFormTemplate({ state, availableDestinations, availableOf
   `);
 }
 
-export default class EditPointForm extends AbstractStatefulView {
+export default class EditEventForm extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #onCloseClick = null;
   #onFormSubmit = null;
+  #onDeleteButtonClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({ editingTrip, destinations, offers, onCloseClick, onFormSubmit }) {
+  constructor({ editingTrip, destinations, offers, onCloseClick, onFormSubmit, onTripDelete }) {
     super();
-    this._setState(EditPointForm.parseTripToState(editingTrip));
+    this._setState(EditEventForm.parseTripToState(editingTrip));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#onCloseClick = onCloseClick;
     this.#onFormSubmit = onFormSubmit;
+    this.#onDeleteButtonClick = onTripDelete;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
-    this.element.querySelector('.event__save-btn').addEventListener('click', this.#onFormSubmit);
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#handleFormSubmit);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteButtonClick);
     this.element.querySelector('.event__type-list').addEventListener('change', this.#handleTripTypeChange);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#handleDestinationChange);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#handleBasePriceChange);
@@ -138,7 +141,7 @@ export default class EditPointForm extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditPointFormTemplate({
+    return createEditEventFormTemplate({
       state: this._state,
       availableDestinations: this.#destinations,
       availableOffers: this.#offers,
@@ -154,6 +157,12 @@ export default class EditPointForm extends AbstractStatefulView {
     const trip = {...state};
     return trip;
   }
+
+  #handleFormSubmit = (event) => {
+    event.preventDefault();
+    const updatedTrip = EditEventForm.parseStateToTrip(this._state);
+    this.#onFormSubmit(updatedTrip);
+  };
 
   #setDatepicker() {
     const dateFrom = this.element.querySelector('.event__input--time[name="event-start-time"]');
@@ -241,7 +250,8 @@ export default class EditPointForm extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
-    this.element.querySelector('.event__save-btn').addEventListener('click', this.#onFormSubmit);
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#handleFormSubmit);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteButtonClick);
     this.element.querySelector('.event__type-list').addEventListener('change', this.#handleTripTypeChange);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#handleDestinationChange);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#handleBasePriceChange);

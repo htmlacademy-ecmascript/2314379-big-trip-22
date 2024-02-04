@@ -61,7 +61,7 @@ const SORT_VARIANTS = [
   },
 ];
 
-const FILTERS = {
+const FILTERS_TYPES = {
   Everything: 'everything',
   Future: 'future',
   Present: 'present',
@@ -70,22 +70,22 @@ const FILTERS = {
 
 const FILTER_VARIANTS = [
   {
-    type: FILTERS.Everything,
+    type: FILTERS_TYPES.Everything,
     state: 'checked',
     label: 'Everything',
   },
   {
-    type: FILTERS.Future,
+    type: FILTERS_TYPES.Future,
     state: null,
     label: 'Future',
   },
   {
-    type: FILTERS.Present,
+    type: FILTERS_TYPES.Present,
     state: null,
     label: 'Present',
   },
   {
-    type: FILTERS.Past,
+    type: FILTERS_TYPES.Past,
     state: null,
     label: 'Past',
   },
@@ -125,15 +125,27 @@ const OFFER_VARIANTS = [
 ];
 
 const EMPTY_LIST_MESSAGE_BY_FILTERS_MAP = {
-  [FILTERS.Everything]: 'Click New Event to create your first point',
-  [FILTERS.Future]: 'There are no future events now',
-  [FILTERS.Present]: 'There are no present events now',
-  [FILTERS.Past]: 'There are no past events now',
+  [FILTERS_TYPES.Everything]: 'Click New Event to create your first point',
+  [FILTERS_TYPES.Future]: 'There are no future events now',
+  [FILTERS_TYPES.Present]: 'There are no present events now',
+  [FILTERS_TYPES.Past]: 'There are no past events now',
 };
 
 const TRIP_MODE = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
+};
+
+const UPDATE_TYPE = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const ACTION_TYPE = {
+  UPDATE_TRIP: 'UPDATE_TRIP',
+  ADD_TRIP: 'ADD_TRIP',
+  DELETE_TRIP: 'DELETE_TRIP',
 };
 
 export {
@@ -151,5 +163,8 @@ export {
   OFFER_VARIANTS,
   EMPTY_LIST_MESSAGE_BY_FILTERS_MAP,
   TRIP_MODE,
+  FILTERS_TYPES,
   SORT_TYPES,
+  UPDATE_TYPE,
+  ACTION_TYPE,
 };
