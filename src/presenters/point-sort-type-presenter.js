@@ -1,9 +1,9 @@
 import { render } from '../render';
-import TripSortType from '../view/trip-sort-type';
+import PointSortType from '../view/point-sort-type';
 
-export default class TripSortTypePresenter {
+export default class PointSortTypePresenter {
   #container = null;
-  #tripSortTypeComponent = null;
+  #pointSortTypeComponent = null;
   #onSortTypeChange = null;
   #sortTypeData = null;
 
@@ -14,12 +14,12 @@ export default class TripSortTypePresenter {
   }
 
   init() {
-    this.#tripSortTypeComponent = new TripSortType({
+    this.#pointSortTypeComponent = new PointSortType({
       sortTypeData: this.#sortTypeData,
       onSortTypeClick: this.#handleSortTypeClick,
     });
 
-    render(this.#tripSortTypeComponent, this.#container);
+    render(this.#pointSortTypeComponent, this.#container);
   }
 
   #handleSortTypeClick = () => {

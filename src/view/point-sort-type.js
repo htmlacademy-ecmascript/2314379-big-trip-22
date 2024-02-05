@@ -11,7 +11,7 @@ function createEventSortTypeTemplate(sortTypeData) {
   return sortItem;
 }
 
-export default class TripSortType extends AbstractView {
+export default class PointSortType extends AbstractView {
   #sortTypeData = null;
 
   constructor({ sortTypeData, onSortTypeClick }) {

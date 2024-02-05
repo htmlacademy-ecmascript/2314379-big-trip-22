@@ -1,7 +1,7 @@
-import AddTripButton from '../view/add-trip-button.js';
+import AddPointButton from '../view/add-point-button.js';
 import { render } from '../framework/render.js';
 
-export default class AddTripButtonPresenter {
+export default class AddPointButtonPresenter {
   #container = null;
   #buttonComponent = null;
   #onButtonClick = null;
@@ -12,7 +12,7 @@ export default class AddTripButtonPresenter {
 
   init({ onButtonClick }) {
     this.#onButtonClick = onButtonClick;
-    this.#buttonComponent = new AddTripButton({
+    this.#buttonComponent = new AddPointButton({
       onButtonClick: this.#handleButtonClick,
     });
     render(this.#buttonComponent, this.#container);

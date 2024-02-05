@@ -4,7 +4,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createEditEventFormTemplate({ state, availableDestinations, availableOffers }) {
+function createEditPointFormTemplate({ state, availableDestinations, availableOffers }) {
   const { type, dateFrom, dateTo, offers, basePrice, destination } = state;
 
   const eventTypeItems = EVENT_TYPES.map((eventType) => (`
@@ -15,7 +15,8 @@ function createEditEventFormTemplate({ state, availableDestinations, availableOf
   `)).join('');
 
   const eventName = capitalizeFirstLetter(type);
-  const destinationItems = availableDestinations.map((availableDestination) => (`
+  const selectedDestination = availableDestinations.find((availableDestination) => availableDestination.id === destination);
+  const destinationItems = availableDestinations?.map((availableDestination) => (`
     <option value="${availableDestination.name}"></option>
   `)).join('');
 
@@ -24,7 +25,7 @@ function createEditEventFormTemplate({ state, availableDestinations, availableOf
 
   const offerItems = availableOffers.map((offer) => {
     const offerTitle = offer.title.toLowerCase();
-    const isChecked = offers.find((tripOffer) => tripOffer?.id === offer.id) ? 'checked' : '';
+    const isChecked = offers.find((pointOffer) => pointOffer === offer.id) ? 'checked' : '';
 
     return (`
       <div class="event__offer-selector">
@@ -38,7 +39,7 @@ function createEditEventFormTemplate({ state, availableDestinations, availableOf
     `);
   }).join('');
 
-  const photoItems = destination.pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`);
+  const photoItems = selectedDestination?.pictures?.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`);
 
   return (`
     <form class="event event--edit" action="#" method="post">
@@ -59,11 +60,11 @@ function createEditEventFormTemplate({ state, availableDestinations, availableOf
         </div>
 
         <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-${destination.id}">
+          <label class="event__label  event__type-output" for="event-destination-${selectedDestination?.id}">
             ${eventName}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${destination.id}" type="text" name="event-destination" value="${destination.name}" list="destination-list-${destination.id}">
-          <datalist id="destination-list-${destination.id}">
+          <input class="event__input  event__input--destination" id="event-destination-${selectedDestination?.id}" type="text" name="event-destination" value="${selectedDestination?.name}" list="destination-list-${selectedDestination?.id}">
+          <datalist id="destination-list-${selectedDestination?.id}">
             ${destinationItems}
           </datalist>
         </div>
@@ -101,7 +102,7 @@ function createEditEventFormTemplate({ state, availableDestinations, availableOf
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destination.description}</p>
+          <p class="event__destination-description">${selectedDestination?.description}</p>
           <div class="event__photos-container">
             <div class="event__photos-tape">
               ${photoItems}
@@ -113,7 +114,7 @@ function createEditEventFormTemplate({ state, availableDestinations, availableOf
   `);
 }
 
-export default class EditEventForm extends AbstractStatefulView {
+export default class EditPointForm extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #onCloseClick = null;
@@ -122,46 +123,50 @@ export default class EditEventForm extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({ editingTrip, destinations, offers, onCloseClick, onFormSubmit, onTripDelete }) {
+  constructor({ editingPoint, destinations, offers, onCloseClick, onFormSubmit, onPointDelete }) {
     super();
-    this._setState(EditEventForm.parseTripToState(editingTrip));
+    this._setState(EditPointForm.parsePointToState(editingPoint));
     this.#destinations = destinations;
     this.#offers = offers;
     this.#onCloseClick = onCloseClick;
     this.#onFormSubmit = onFormSubmit;
-    this.#onDeleteButtonClick = onTripDelete;
+    this.#onDeleteButtonClick = onPointDelete;
+    this._restoreHandlers();
+  }
+
+  _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
-    this.element.querySelector('.event__save-btn').addEventListener('click', this.#handleFormSubmit);
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#formSubmitHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteButtonClick);
-    this.element.querySelector('.event__type-list').addEventListener('change', this.#handleTripTypeChange);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#handleDestinationChange);
-    this.element.querySelector('.event__input--price').addEventListener('change', this.#handleBasePriceChange);
-    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#handleOfferChange);
+    this.element.querySelector('.event__type-list').addEventListener('change', this.#pointTypeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#basePriceChangeHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChangeHandler);
     this.#setDatepicker();
   }
 
   get template() {
-    return createEditEventFormTemplate({
+    return createEditPointFormTemplate({
       state: this._state,
       availableDestinations: this.#destinations,
       availableOffers: this.#offers,
     });
   }
 
-  static parseTripToState(editingTrip) {
-    const trip = {...editingTrip};
-    return trip;
+  static parsePointToState(editingPoint) {
+    const point = {...editingPoint};
+    return point;
   }
 
-  static parseStateToTrip(state) {
-    const trip = {...state};
-    return trip;
+  static parseStateToPoint(state) {
+    const point = {...state};
+    return point;
   }
 
-  #handleFormSubmit = (event) => {
+  #formSubmitHandler = (event) => {
     event.preventDefault();
-    const updatedTrip = EditEventForm.parseStateToTrip(this._state);
-    this.#onFormSubmit(updatedTrip);
+    const updatedPoint = EditPointForm.parseStateToPoint(this._state);
+    this.#onFormSubmit(updatedPoint);
   };
 
   #setDatepicker() {
@@ -197,21 +202,21 @@ export default class EditEventForm extends AbstractStatefulView {
     );
   }
 
-  #handleTripTypeChange = (event) => {
+  #pointTypeChangeHandler = (event) => {
     event.preventDefault();
     this.updateElement({
       type: event.target.value,
     });
   };
 
-  #handleDestinationChange = (event) => {
+  #destinationChangeHandler = (event) => {
     event.preventDefault();
     const selectedDestination = this.#destinations.find((destination) => destination.name === event.target.value);
     if (!selectedDestination) {
       return;
     }
     this.updateElement({
-      destination: selectedDestination,
+      destination: selectedDestination.id,
     });
   };
 
@@ -227,37 +232,27 @@ export default class EditEventForm extends AbstractStatefulView {
     });
   };
 
-  #handleBasePriceChange = (event) => {
+  #basePriceChangeHandler = (event) => {
     event.preventDefault();
     this.updateElement({
       basePrice: event.target.value,
     });
   };
 
-  #handleOfferChange = (event) => {
+  #offerChangeHandler = (event) => {
     event.preventDefault();
     const checkedOffersCollection = this.element.querySelectorAll('.event__offer-checkbox:checked');
     const checkedOffersIdsArray = [...checkedOffersCollection].map((offer) => offer.dataset.id);
-    const checkedOffersArray = this.#offers.map((offer) => {
-      if (checkedOffersIdsArray.includes(offer.id)) {
-        return offer;
-      }
-    });
+    // const checkedOffersArray = this.#offers.map((offer) => {
+    //   if (checkedOffersIdsArray.includes(offer.id)) {
+    //     return offer.id;
+    //   }
+    // });
+    console.log(checkedOffersIdsArray)
     this.updateElement({
-      offers: checkedOffersArray,
+      offers: checkedOffersIdsArray,
     });
   };
-
-  _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCloseClick);
-    this.element.querySelector('.event__save-btn').addEventListener('click', this.#handleFormSubmit);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteButtonClick);
-    this.element.querySelector('.event__type-list').addEventListener('change', this.#handleTripTypeChange);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#handleDestinationChange);
-    this.element.querySelector('.event__input--price').addEventListener('change', this.#handleBasePriceChange);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#handleOfferChange);
-    this.#setDatepicker();
-  }
 
   removeElement() {
     super.removeElement();

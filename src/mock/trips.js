@@ -1,7 +1,7 @@
 import { getRandomArrayElement } from '../utils.js';
 import { EVENT_TYPES } from '../const.js';
 
-const mockTripEvents = [
+const mockPoints = [
   {
     id: '1',
     type: getRandomArrayElement(EVENT_TYPES),
@@ -44,4 +44,4 @@ const mockTripEvents = [
   },
 ];
 
-export { mockTripEvents };
+export { mockPoints };
