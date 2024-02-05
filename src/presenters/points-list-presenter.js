@@ -116,7 +116,7 @@ export default class PointsListPresenter {
     pointPresenter.init(point);
     this.#pointPresenters[point.id] = pointPresenter;
   }
-  
+
   #renderLoading() {
     render(this.#loadingComponent, this.#container);
   }
@@ -127,7 +127,7 @@ export default class PointsListPresenter {
       case ACTION_TYPE.UPDATE_POINT:
         this.#pointPresenters[updatedPointData.id].setSaving();
         try {
-          await this.#pointsModel.update(updateType, update);
+          await this.#pointsModel.update(updateType, updatedPointData);
         } catch (error) {
           this.#pointPresenters[updatedPointData.id].setAborting();
         }
@@ -135,7 +135,7 @@ export default class PointsListPresenter {
       case ACTION_TYPE.ADD_POINT:
         this.#addPointPresenter.setSaving();
         try {
-          await this.#pointsModel.add(updateType, update);
+          await this.#pointsModel.add(updateType, updatedPointData);
 
           this.#addPointPresenter.destroy({isCanceled: false});
         } catch (error) {
@@ -145,7 +145,7 @@ export default class PointsListPresenter {
       case ACTION_TYPE.DELETE_POINT:
         this.#pointPresenters[updatedPointData.id].setRemove();
         try {
-          await this.#pointsModel.delete(updateType, update);
+          await this.#pointsModel.delete(updateType, updatedPointData);
         } catch (error) {
           this.#pointPresenters[updatedPointData.id].setAborting();
         }

@@ -3,7 +3,7 @@ export default class DestinationsModel {
   #destinations = [];
 
   constructor(service) {
-    this.#service = service
+    this.#service = service;
   }
 
   async init() {

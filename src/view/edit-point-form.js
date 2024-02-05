@@ -243,12 +243,6 @@ export default class EditPointForm extends AbstractStatefulView {
     event.preventDefault();
     const checkedOffersCollection = this.element.querySelectorAll('.event__offer-checkbox:checked');
     const checkedOffersIdsArray = [...checkedOffersCollection].map((offer) => offer.dataset.id);
-    // const checkedOffersArray = this.#offers.map((offer) => {
-    //   if (checkedOffersIdsArray.includes(offer.id)) {
-    //     return offer.id;
-    //   }
-    // });
-    console.log(checkedOffersIdsArray)
     this.updateElement({
       offers: checkedOffersIdsArray,
     });

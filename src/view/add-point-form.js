@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EVENT_TYPES, FULL_DATE_FORMAT, DATEPICKER_DATE_FORMAT } from '../const.js';
-import { capitalizeFirstLetter, humanizeDate, checkPriceIsNumber } from '../utils.js';
+import { capitalizeFirstLetter, humanizeDate } from '../utils.js';
 import flatpickr from 'flatpickr';
 
 function createAddEventFormTemplate({ state, availableDestinations, availableOffers }) {

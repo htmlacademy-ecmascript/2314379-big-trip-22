@@ -14,7 +14,7 @@ export default class PointsModel extends Observable {
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
   }
-  
+
   async init() {
     try {
       await Promise.all([this.#destinationsModel.init(), this.#offersModel.init()]);
@@ -42,7 +42,6 @@ export default class PointsModel extends Observable {
       this.#points = updateItem(this.#points, adaptedPoint);
       this._notify(updateType, adaptedPoint);
     } catch (error) {
-      console.log(error)
       throw new Error('Update point failure');
     }
   }
@@ -61,7 +60,7 @@ export default class PointsModel extends Observable {
   async deletePoint(updateType, deletedPoint) {
     try {
       await this.#service.deletePoint(deletedPoint);
-      this.#points = this.#points.filter((item) => item.id !== point.id);
+      this.#points = this.#points.filter((item) => item.id !== deletedPoint.id);
       this._notify(updateType, deletedPoint);
     } catch (error) {
       throw new Error('Delete point failure');
