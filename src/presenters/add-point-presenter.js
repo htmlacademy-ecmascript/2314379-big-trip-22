@@ -1,12 +1,12 @@
 import { render } from '../render';
-import AddPointForm from '../view/add-event-form';
+import AddPointForm from '../view/add-point-form';
 import { remove } from '../framework/render';
 
-export default class AddEventPresenter {
+export default class AddPointPresenter {
   #container = null;
   #destinations = null;
   #offers = null;
-  #tripAddComponent = null;
+  #pointAddComponent = null;
   #onAddFormOpen = null;
   #onEventCreate = null;
   #handleFormCancel = null;
@@ -22,7 +22,7 @@ export default class AddEventPresenter {
 
   init() {
     this.#onAddFormOpen();
-    this.#tripAddComponent = new AddPointForm({
+    this.#pointAddComponent = new AddPointForm({
       destinations: this.#destinations,
       offers: this.#offers,
       onFormSubmit: this.#onEventCreate,
@@ -30,10 +30,10 @@ export default class AddEventPresenter {
     });
 
     const position = 'beforebegin';
-    render(this.#tripAddComponent, this.#container, position);
+    render(this.#pointAddComponent, this.#container, position);
   }
 
   removeComponent = () => {
-    remove(this.#tripAddComponent);
+    remove(this.#pointAddComponent);
   };
 }

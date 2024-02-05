@@ -1,30 +1,33 @@
 import { capitalizeFirstLetter, humanizeDate, getTimeRange } from '../utils';
 import { MONTH_FORMAT, MONTH_DAY_FORMAT, HOURS_MINUTES_FORMAT } from '../const';
 import AbstractView from '../framework/view/abstract-view.js';
+import he from 'he';
 
-function createTripEventTemplate(trip) {
-  const { type, destination, dateFrom, dateTo, basePrice, offers, isFavorite } = trip;
+function createPointTemplate(point, availableDestinations, availableOffers) {
+  const { type, destination, dateFrom, dateTo, basePrice, offers, isFavorite } = point;
 
-  const tripDate = `${humanizeDate(dateFrom, MONTH_FORMAT).toUpperCase()} ${humanizeDate(dateFrom, MONTH_DAY_FORMAT)}`;
-  const tripTitle = `${capitalizeFirstLetter(type)} ${destination.name}`;
+  const selectedDestination = availableDestinations.find((availableDestination) => availableDestination.id === destination);
+  const selectedOffers = availableOffers.filter((offerByType) => offers.includes(offerByType.id));
+  const pointDate = `${humanizeDate(dateFrom, MONTH_FORMAT).toUpperCase()} ${humanizeDate(dateFrom, MONTH_DAY_FORMAT)}`;
+  const pointTitle = `${capitalizeFirstLetter(type)} ${he.encode(String(selectedDestination.name))}`;
   const timeFrom = humanizeDate(dateFrom, HOURS_MINUTES_FORMAT);
   const timeTo = humanizeDate(dateTo, HOURS_MINUTES_FORMAT);
-  const offersList = offers?.map((offer) => (`
+  const offersList = selectedOffers?.map((offer) => (`
     <li class="event__offer">
-      <span class="event__offer-title">${offer.title}</span>
+      <span class="event__offer-title">${he.encode(String(offer.title))}</span>
       &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offer.price}</span>
+      <span class="event__offer-price">${he.encode(String(offer.price))}</span>
     </li>`
   )).join('');
 
   return (`
     <li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime="2019-03-18">${tripDate}</time>
+        <time class="event__date" datetime="2019-03-18">${pointDate}</time>
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${tripTitle}</h3>
+        <h3 class="event__title">${pointTitle}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime=${dateFrom}>${timeFrom}</time>
@@ -54,14 +57,18 @@ function createTripEventTemplate(trip) {
   `);
 }
 
-export default class TripEvent extends AbstractView {
-  #trip = null;
+export default class Point extends AbstractView {
+  #point = null;
+  #destinations = null;
+  #offers = null;
   #onEditClick = null;
   #onFavoriteClick = null;
 
-  constructor({trip, onEditClick, onFavoriteClick}) {
+  constructor({point, destinations, offers, onEditClick, onFavoriteClick}) {
     super();
-    this.#trip = trip;
+    this.#point = point;
+    this.#destinations = destinations;
+    this.#offers = offers;
     this.#onEditClick = onEditClick;
     this.#onFavoriteClick = onFavoriteClick;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onEditClick);
@@ -69,6 +76,6 @@ export default class TripEvent extends AbstractView {
   }
 
   get template() {
-    return createTripEventTemplate(this.#trip);
+    return createPointTemplate(this.#point, this.#destinations, this.#offers);
   }
 }

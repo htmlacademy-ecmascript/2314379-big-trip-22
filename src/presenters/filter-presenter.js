@@ -1,11 +1,11 @@
 import { render, RenderPosition } from '../render';
 import { remove } from '../framework/render.js';
-import TripFilters from '../view/trip-filters';
+import PointFilters from '../view/point-filters';
 import { UPDATE_TYPE } from '../const.js';
 
 export default class FilterPresenter {
   #filterModel = null;
-  #tripFilters = null;
+  #pointFilters = null;
   #renderPosition = RenderPosition.AFTERBEGIN;
   #container = null;
 
@@ -17,23 +17,23 @@ export default class FilterPresenter {
   }
 
   init() {
-    this.#tripFilters = new TripFilters({
+    this.#pointFilters = new PointFilters({
       filterModel: this.#filterModel,
-      handleFilterChange: this.#handleFilterChange,
+      onFilterChange: this.#filterChangeHandler,
     });
-    render(this.#tripFilters, this.#container, this.#renderPosition);
+    render(this.#pointFilters, this.#container, this.#renderPosition);
   }
 
-  #handleFilterChange = (selectedType) => {
+  #filterChangeHandler = (selectedType) => {
     this.#filterModel.selectFilter(UPDATE_TYPE.MINOR, selectedType);
   };
 
   #handleModelEvent = () => {
-    this.#removeTripFilters();
+    this.#removePointFilters();
     this.init();
   };
 
-  #removeTripFilters = () => {
-    remove(this.#tripFilters);
+  #removePointFilters = () => {
+    remove(this.#pointFilters);
   };
 }

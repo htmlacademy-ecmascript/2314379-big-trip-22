@@ -19,73 +19,73 @@ const MINUTES_FORMAT = 'm';
 const MINUTES_IN_HOUR = 60;
 
 const MAIN_EVENT = {
-  label: 'Amsterdam &mdash; Chamonix &mdash; Geneva',
-  dates: '18&nbsp;&mdash;&nbsp;20 Mar',
-  price: '1230',
-  currency: 'euro',
+  LABEL: 'Amsterdam &mdash; Chamonix &mdash; Geneva',
+  DATES: '18&nbsp;&mdash;&nbsp;20 Mar',
+  PRICE: '1230',
+  CURRENCY: 'euro',
 };
 
 const SORT_TYPES = {
-  Day: 'day',
-  Event: 'event',
-  Time: 'time',
-  Price: 'price',
-  Offers: 'offers',
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers',
 };
 
 const SORT_VARIANTS = [
   {
-    type: SORT_TYPES.Day,
+    type: SORT_TYPES.DAY,
     state: 'checked',
     label: 'Day',
   },
   {
-    type: SORT_TYPES.Event,
+    type: SORT_TYPES.EVENT,
     state: 'disabled',
     label: 'Event',
   },
   {
-    type: SORT_TYPES.Time,
+    type: SORT_TYPES.TIME,
     state: null,
     label: 'Time',
   },
   {
-    type: SORT_TYPES.Price,
+    type: SORT_TYPES.PRICE,
     state: null,
     label: 'Price',
   },
   {
-    type: SORT_TYPES.Offers,
+    type: SORT_TYPES.OFFERS,
     state: 'disabled',
     label: 'Offers',
   },
 ];
 
 const FILTERS_TYPES = {
-  Everything: 'everything',
-  Future: 'future',
-  Present: 'present',
-  Past: 'past',
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
 };
 
 const FILTER_VARIANTS = [
   {
-    type: FILTERS_TYPES.Everything,
+    type: FILTERS_TYPES.EVERYTHING,
     state: 'checked',
     label: 'Everything',
   },
   {
-    type: FILTERS_TYPES.Future,
+    type: FILTERS_TYPES.FUTURE,
     state: null,
     label: 'Future',
   },
   {
-    type: FILTERS_TYPES.Present,
+    type: FILTERS_TYPES.PRESENT,
     state: null,
     label: 'Present',
   },
   {
-    type: FILTERS_TYPES.Past,
+    type: FILTERS_TYPES.PAST,
     state: null,
     label: 'Past',
   },
@@ -125,13 +125,13 @@ const OFFER_VARIANTS = [
 ];
 
 const EMPTY_LIST_MESSAGE_BY_FILTERS_MAP = {
-  [FILTERS_TYPES.Everything]: 'Click New Event to create your first point',
-  [FILTERS_TYPES.Future]: 'There are no future events now',
-  [FILTERS_TYPES.Present]: 'There are no present events now',
-  [FILTERS_TYPES.Past]: 'There are no past events now',
+  [FILTERS_TYPES.EVERYTHING]: 'Click New Event to create your first point',
+  [FILTERS_TYPES.FUTURE]: 'There are no future events now',
+  [FILTERS_TYPES.PRESENT]: 'There are no present events now',
+  [FILTERS_TYPES.PAST]: 'There are no past events now',
 };
 
-const TRIP_MODE = {
+const POINT_MODE = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
 };
@@ -140,12 +140,31 @@ const UPDATE_TYPE = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const ACTION_TYPE = {
-  UPDATE_TRIP: 'UPDATE_TRIP',
-  ADD_TRIP: 'ADD_TRIP',
-  DELETE_TRIP: 'DELETE_TRIP',
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const METHOD = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+const SOURCE_URL = {
+  POINTS: 'points',
+  OFFERS: 'offers',
+  DESTINATIONS: 'destinations',
+};
+
+const TIME_LIMIT = {
+  LOWER_LIMIT: 300,
+  UPPER_LIMIT: 1000,
 };
 
 export {
@@ -162,9 +181,12 @@ export {
   FILTER_VARIANTS,
   OFFER_VARIANTS,
   EMPTY_LIST_MESSAGE_BY_FILTERS_MAP,
-  TRIP_MODE,
+  POINT_MODE,
   FILTERS_TYPES,
   SORT_TYPES,
   UPDATE_TYPE,
   ACTION_TYPE,
+  METHOD,
+  SOURCE_URL,
+  TIME_LIMIT,
 };
