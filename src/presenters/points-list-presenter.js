@@ -193,7 +193,7 @@ export default class PointsListPresenter {
     if (selectedType === this.#currentSortType || getIsSortVariantDisabled(selectedType)) {
       return;
     }
-  
+
     this.#sortsModel.selectSort(UpdateType.MINOR, selectedType);
     this.#currentSortType = this.#sortsModel.selectedSort.type;
   };

@@ -243,7 +243,7 @@ export default class EditPointForm extends AbstractStatefulView {
   #closeButtonClickHandler = () => {
     this.updateElement(EditPointForm.parsePointToState(this.#editingPoint));
     this.#onCloseClick();
-  }
+  };
 
   #formSubmitHandler = (event) => {
     event.preventDefault();

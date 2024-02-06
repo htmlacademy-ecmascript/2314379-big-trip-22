@@ -9,7 +9,7 @@ export default class PointPresenter {
   #destinations = null;
   #offers = null;
   #mode = PointMode.DEFAULT;
-  #onEditorOpen =  null;
+  #onEditorOpen = null;
   #onModeChange = null;
   #onDataChange = null;
   #pointComponent = null;

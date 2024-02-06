@@ -4,9 +4,7 @@ import { SortType, SORT_VARIANTS, FilterType } from './const';
 
 dayjs.extend(duration);
 
-const getRandomArrayElement = (items) => {
-  return items[Math.floor(Math.random() * items.length)];
-};
+const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
 
 const capitalizeFirstLetter = (word) => {
   const capitalizedLetter = word[0].toUpperCase();
@@ -14,9 +12,7 @@ const capitalizeFirstLetter = (word) => {
   return capitalizedLetter + word.slice(1);
 };
 
-const humanizeDate = (date, format) => {
-  return dayjs(date).format(format);
-};
+const humanizeDate = (date, format) => dayjs(date).format(format);
 
 const getTimeRange = (dateFrom, dateTo) => {
   const diff = dayjs(dateTo).diff(dayjs(dateFrom));
@@ -33,17 +29,11 @@ const getTimeRange = (dateFrom, dateTo) => {
   return eventTimeRange.format('mm[m]');
 };
 
-const getDefaultSortVariant = () => {
-  return SORT_VARIANTS.find((variant) => variant.type === SortType.DAY);
-};
+const getDefaultSortVariant = () => SORT_VARIANTS.find((variant) => variant.type === SortType.DAY);
 
-const getIsSortVariantDisabled = (variantType) => {
-  return SORT_VARIANTS.find((variant) => variant.type === variantType).state === 'disabled';
-};
+const getIsSortVariantDisabled = (variantType) => SORT_VARIANTS.find((variant) => variant.type === variantType).state === 'disabled';
 
-const getDateDiff = (firstDate, secondDate) => {
-  return dayjs(firstDate).diff(dayjs(secondDate));
-};
+const getDateDiff = (firstDate, secondDate) => dayjs(firstDate).diff(dayjs(secondDate));
 
 const sortByDate = (points) => {
   const sortedPoints = points?.sort((pointA, pointB) => getDateDiff(pointA.dateFrom, pointB.dateFrom));
@@ -153,9 +143,7 @@ const adaptToServer = (point) => {
   return adaptedPoint;
 };
 
-const updateItem = (items, update) => {
-  return items.map((item) => item.id === update.id ? update : item);
-};
+const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
 export {
   getRandomArrayElement,
