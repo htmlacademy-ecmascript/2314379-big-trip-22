@@ -1,24 +1,24 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { MINUTES_IN_HOUR, HOURS_IN_DAY, MINUTES_FORMAT, SORT_TYPES, SORT_VARIANTS, FILTERS_TYPES } from './const';
+import { SortType, SORT_VARIANTS, FilterType } from './const';
 
 dayjs.extend(duration);
 
-function getRandomArrayElement(items) {
+const getRandomArrayElement = (items) => {
   return items[Math.floor(Math.random() * items.length)];
-}
+};
 
-function capitalizeFirstLetter(word) {
+const capitalizeFirstLetter = (word) => {
   const capitalizedLetter = word[0].toUpperCase();
 
   return capitalizedLetter + word.slice(1);
-}
+};
 
-function humanizeDate(date, format) {
+const humanizeDate = (date, format) => {
   return dayjs(date).format(format);
-}
+};
 
-function getTimeRange(dateFrom, dateTo) {
+const getTimeRange = (dateFrom, dateTo) => {
   const diff = dayjs(dateTo).diff(dayjs(dateFrom));
   const eventTimeRange = dayjs.duration(diff);
 
@@ -31,76 +31,95 @@ function getTimeRange(dateFrom, dateTo) {
   }
 
   return eventTimeRange.format('mm[m]');
-}
+};
 
-export { getRandomArrayElement, capitalizeFirstLetter, humanizeDate, getTimeRange };
+const getDefaultSortVariant = () => {
+  return SORT_VARIANTS.find((variant) => variant.type === SortType.DAY);
+};
 
-export function getDefaultSortVariant() {
-  return SORT_VARIANTS.find((variant) => variant.type === SORT_TYPES.DAY);
-}
-
-export function isSortVariantDisabled(variantType) {
+const getIsSortVariantDisabled = (variantType) => {
   return SORT_VARIANTS.find((variant) => variant.type === variantType).state === 'disabled';
-}
+};
 
-function getDateDiff(firstDate, secondDate) {
+const getDateDiff = (firstDate, secondDate) => {
   return dayjs(firstDate).diff(dayjs(secondDate));
-}
+};
 
-export function sortByDate(points) {
-  const sortedPoints = points?.sort((PointA, PointB) => getDateDiff(PointA.dateFrom, PointB.dateFrom));
+const sortByDate = (points) => {
+  const sortedPoints = points?.sort((pointA, pointB) => getDateDiff(pointA.dateFrom, pointB.dateFrom));
   return sortedPoints;
-}
+};
 
-export function sortByPrice(points) {
-  const sortedPoints = points?.sort((PointA, PointB) => Number(PointA.basePrice) - Number(PointB.basePrice));
+const getFullPrice = (offers, basePrice) => {
+  const fullPrice = offers.reduce((sum, offer) => {
+    sum += Number(offer.price);
+
+    return sum;
+  }, Number(basePrice));
+
+  return fullPrice;
+};
+
+const sortByPrice = (points, offers) => {
+  const sortedPoints = points?.sort((pointA, pointB) => {
+    const pointAOffers = offers.find((offer) => offer.type === pointA.type).offers;
+    const pointASelectedOffers = pointAOffers.filter((offer) => pointA.offers.includes(offer.id));
+    const pointAFullPrice = getFullPrice(pointASelectedOffers, pointA.basePrice);
+
+    const pointBOffers = offers.find((offer) => offer.type === pointB.type).offers;
+    const pointBSelectedOffers = pointBOffers.filter((offer) => pointB.offers.includes(offer.id));
+    const pointBFullPrice = getFullPrice(pointBSelectedOffers, pointB.basePrice);
+
+    return pointBFullPrice - pointAFullPrice;
+  });
+
   return sortedPoints;
-}
+};
 
-export function sortByTime(points) {
-  const sortedPoints = points?.sort((PointA, PointB) => getDateDiff(PointB.dateFrom, PointB.dateTo) - getDateDiff(PointA.dateFrom, PointA.dateTo));
+const sortByTime = (points) => {
+  const sortedPoints = points?.sort((pointA, pointB) => getDateDiff(pointA.dateFrom, pointA.dateTo) - getDateDiff(pointB.dateFrom, pointB.dateTo));
   return sortedPoints;
-}
+};
 
-export function sortPointsListByType(points, sortType) {
+const sortPointsListByType = (points, sortType, offers) => {
   const sortsMap = {
-    [SORT_TYPES.DAY]: () => sortByDate(points),
-    [SORT_TYPES.EVENT]: () => points,
-    [SORT_TYPES.OFFERS]: () => points,
-    [SORT_TYPES.PRICE]: () => sortByPrice(points),
-    [SORT_TYPES.TIME]: () => sortByTime(points),
+    [SortType.DAY]: () => sortByDate(points),
+    [SortType.EVENT]: () => points,
+    [SortType.OFFERS]: () => points,
+    [SortType.PRICE]: () => sortByPrice(points, offers),
+    [SortType.TIME]: () => sortByTime(points),
   };
 
   return sortsMap[sortType]();
-}
+};
 
-export function getFuturePoints(points) {
+const getFuturePoints = (points) => {
   const futurePoints = points.filter((point) => dayjs().isBefore(point.dateFrom, 'day'));
   return futurePoints;
-}
+};
 
-export function getPastPoints(points) {
+const getPastPoints = (points) => {
   const futurePoints = points.filter((point) => dayjs().isAfter(point.dateTo, 'day'));
   return futurePoints;
-}
+};
 
-export function getPresentPoints(points) {
+const getPresentPoints = (points) => {
   const futurePoints = points.filter((point) => dayjs().isAfter(point.dateFrom, 'day') && dayjs().isBefore(point.dateTo, 'day'));
   return futurePoints;
-}
+};
 
-export function filterPoints(points, filterType) {
+const filterPoints = (points, filterType) => {
   const filterMap = {
-    [FILTERS_TYPES.EVERYTHING]: () => points,
-    [FILTERS_TYPES.FUTURE]: () => getFuturePoints(points),
-    [FILTERS_TYPES.PAST]: () => getPastPoints(points),
-    [FILTERS_TYPES.PRESENT]: () => getPresentPoints(points),
+    [FilterType.EVERYTHING]: () => points,
+    [FilterType.FUTURE]: () => getFuturePoints(points),
+    [FilterType.PAST]: () => getPastPoints(points),
+    [FilterType.PRESENT]: () => getPresentPoints(points),
   };
 
   return filterMap[filterType]();
-}
+};
 
-export function adaptToClient(point) {
+const adaptToClient = (point) => {
   const adaptedPoint = {
     ...point,
     dateFrom: point['date_from'],
@@ -115,9 +134,9 @@ export function adaptToClient(point) {
   delete adaptedPoint['is_favorite'];
 
   return adaptedPoint;
-}
+};
 
-export function adaptToServer(point) {
+const adaptToServer = (point) => {
   const adaptedPoint = {
     ...point,
     ['date_from']: new Date(point.dateFrom).toISOString(),
@@ -132,8 +151,22 @@ export function adaptToServer(point) {
   delete adaptedPoint.isFavorite;
 
   return adaptedPoint;
-}
+};
 
-export function updateItem(items, update) {
+const updateItem = (items, update) => {
   return items.map((item) => item.id === update.id ? update : item);
-}
+};
+
+export {
+  getRandomArrayElement,
+  capitalizeFirstLetter,
+  humanizeDate,
+  getTimeRange,
+  getDefaultSortVariant,
+  getIsSortVariantDisabled,
+  sortPointsListByType,
+  filterPoints,
+  adaptToClient,
+  adaptToServer,
+  updateItem,
+};

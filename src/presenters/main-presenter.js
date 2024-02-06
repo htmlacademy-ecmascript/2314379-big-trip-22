@@ -34,7 +34,7 @@ const filterPresenter = new FilterPresenter({ container: filtersBlock, filtersMo
 export default class MainPresenter {
   init() {
     headerPresenter.init();
-    addButtonPresenter.init({ onButtonClick: pointsListPresenter.handleAddEventButtonClick });
+    addButtonPresenter.init({ onButtonClick: pointsListPresenter.addEventButtonClickHandler });
     filterPresenter.init();
     pointsListPresenter.init();
     pointsModel.init();

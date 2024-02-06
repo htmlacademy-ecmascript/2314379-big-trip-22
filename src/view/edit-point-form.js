@@ -1,4 +1,4 @@
-import { POINT_TYPES, FULL_DATE_FORMAT, DATEPICKER_DATE_FORMAT } from '../const';
+import { POINT_TYPES, DateFormat, EditType } from '../const';
 import { capitalizeFirstLetter, humanizeDate } from '../utils';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
@@ -29,11 +29,11 @@ function createDestinationsTemplate({ eventName, destination, availableDestinati
 
   return `
     <div class="event__field-group  event__field-group--destination">
-      <label class="event__label  event__type-output" for="event-destination-${destination?.id}">
+      <label class="event__label  event__type-output" for="event-destination-${destination?.id ?? ''}">
         ${eventName}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-${destination?.id}" type="text" name="event-destination" value="${destination?.name}" list="destination-list-${destination?.id}">
-      <datalist id="destination-list-${destination?.id}">
+      <input class="event__input  event__input--destination" id="event-destination-${destination?.id ?? ''}" type="text" name="event-destination" value="${destination?.name ?? ''}" list="destination-list-${destination?.id ?? ''}">
+      <datalist id="destination-list-${destination?.id ?? ''}">
         ${destinationItems}
       </datalist>
     </div>
@@ -86,29 +86,37 @@ function createDestinationInfoTemplate({ destinationDescription, photos }) {
   `;
 }
 
-function createButtonTemplate({ isSaving, isDeleting, isDisabled }) {
+function createButtonTemplate({ isCreating, isSaving, isDeleting, isDisabled }) {
+  const deleteOrCancelButton = isCreating
+    ? '<button class="event__reset-btn" type="reset">Cancel</button>'
+    : `<button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting' : 'Delete'}</button>`;
+
+  const rollupButton = !isCreating
+    ? `<button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
+        <span class="visually-hidden">Open event</span>
+      </button>`
+    : '';
+
   return `
     <button class="event__save-btn  btn  btn--blue" type="submit">${isSaving ? 'Saving' : 'Save'}</button>
-    <button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting' : 'Delete'}</button>
-    <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
-      <span class="visually-hidden">Open event</span>
-    </button>
+    ${deleteOrCancelButton}
+    ${rollupButton}
   `;
 }
 
-function createEditPointFormTemplate({ state, availableDestinations, availableOffers }) {
+function createEditPointFormTemplate({ state, availableDestinations, availableOffers, editorMode }) {
   const { type, dateFrom, dateTo, offers, basePrice, destination, isSaving, isDeleting, isDisabled } = state;
-
+  const isCreating = editorMode === EditType.CREATING;
   const eventName = capitalizeFirstLetter(type);
   const selectedDestination = availableDestinations.find((availableDestination) => availableDestination.id === destination);
 
-  const humanizeDateFrom = humanizeDate(dateFrom, FULL_DATE_FORMAT);
-  const humanizeDateTo = humanizeDate(dateTo, FULL_DATE_FORMAT);
+  const humanizeDateFrom = dateFrom ? humanizeDate(dateFrom, DateFormat.FULL_DATE_FORMAT) : '';
+  const humanizeDateTo = dateTo ? humanizeDate(dateTo, DateFormat.FULL_DATE_FORMAT) : '';
 
   const offersByType = availableOffers.find((offer) => offer.type === type).offers;
 
   const photos = selectedDestination?.pictures;
-  const isDestinationInfoAvailable = selectedDestination?.description || photos.length > 0;
+  const isDestinationInfoAvailable = selectedDestination?.description || photos?.length > 0;
 
   return (`
     <form class="event event--edit" action="#" method="post">
@@ -140,7 +148,7 @@ function createEditPointFormTemplate({ state, availableDestinations, availableOf
           <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value=${basePrice}>
         </div>
 
-        ${createButtonTemplate({ isSaving, isDeleting, isDisabled })}
+        ${createButtonTemplate({ isCreating, isSaving, isDeleting, isDisabled })}
       </header>
       <section class="event__details">
         ${offersByType.length > 0 ? createOffersTemplate({ selectedOffers: offers, availableOffers: offersByType }) : ''}
@@ -159,11 +167,13 @@ export default class EditPointForm extends AbstractStatefulView {
   #onDeleteButtonClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #editorMode = null;
 
-  constructor({ editingPoint, destinations, offers, onCloseClick, onFormSubmit, onPointDelete }) {
+  constructor({ editingPoint, destinations, offers, onCloseClick, onFormSubmit, onPointDelete, editorMode = EditType.EDITING }) {
     super();
     this.#editingPoint = editingPoint;
-    this._setState(EditPointForm.parsePointToState(this.#editingPoint));
+    this.#editorMode = editorMode;
+    this.setDefaultState();
     this.#destinations = destinations;
     this.#offers = offers;
     this.#onCloseClick = onCloseClick;
@@ -173,9 +183,16 @@ export default class EditPointForm extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeButtonClickHandler);
+    if (this.#editorMode === EditType.EDITING) {
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeButtonClickHandler);
+      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteButtonClick);
+    }
+
+    if (this.#editorMode === EditType.CREATING) {
+      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCloseClick);
+    }
+
     this.element.querySelector('.event__save-btn').addEventListener('click', this.#formSubmitHandler);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteButtonClick);
     this.element.querySelector('.event__type-list').addEventListener('change', this.#pointTypeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#basePriceChangeHandler);
@@ -188,7 +205,29 @@ export default class EditPointForm extends AbstractStatefulView {
       state: this._state,
       availableDestinations: this.#destinations,
       availableOffers: this.#offers,
+      editorMode: this.#editorMode,
     });
+  }
+
+  setDefaultState() {
+    if (this.#editorMode === EditType.EDITING) {
+      this._setState(EditPointForm.parsePointToState(this.#editingPoint));
+      return;
+    }
+
+    if (this.#editorMode === EditType.CREATING) {
+      const state = {
+        basePrice: '0',
+        dateFrom: '',
+        dateTo: '',
+        destination: null,
+        offers: [],
+        type: 'flight',
+        isFavorite: false,
+      };
+
+      this._setState(EditPointForm.parsePointToState(state));
+    }
   }
 
   static parsePointToState(editingPoint) {
@@ -216,7 +255,7 @@ export default class EditPointForm extends AbstractStatefulView {
     const dateFrom = this.element.querySelector('.event__input--time[name="event-start-time"]');
     const dateTo = this.element.querySelector('.event__input--time[name="event-end-time"]');
     const config = {
-      dateFormat: DATEPICKER_DATE_FORMAT,
+      dateFormat: DateFormat.DATEPICKER_DATE_FORMAT,
       enableTime: true,
       locale: {
         firstDayOfWeek: 1,

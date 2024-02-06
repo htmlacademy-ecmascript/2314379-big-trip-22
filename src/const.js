@@ -10,14 +10,13 @@ const POINT_TYPES = [
   'restaurant',
 ];
 
-const FULL_DATE_FORMAT = 'YYYY-MM-DD HH:MM';
-const DATEPICKER_DATE_FORMAT = 'd/m/y H:i';
-const MONTH_FORMAT = 'MMM';
-const MONTH_DAY_FORMAT = 'D';
-const HOURS_MINUTES_FORMAT = 'HH:mm';
-const MINUTES_FORMAT = 'm';
-const MINUTES_IN_HOUR = 60;
-const HOURS_IN_DAY = 24;
+const DateFormat = {
+  FULL_DATE_FORMAT: 'YYYY-MM-DD HH:MM',
+  DATEPICKER_DATE_FORMAT: 'd/m/y H:i',
+  MONTH_FORMAT: 'MMM',
+  MONTH_DAY_FORMAT: 'D',
+  HOURS_MINUTES_FORMAT: 'HH:mm',
+};
 
 const MAIN_EVENT = {
   LABEL: 'Amsterdam &mdash; Chamonix &mdash; Geneva',
@@ -26,7 +25,7 @@ const MAIN_EVENT = {
   CURRENCY: 'euro',
 };
 
-const SORT_TYPES = {
+const SortType = {
   DAY: 'day',
   EVENT: 'event',
   TIME: 'time',
@@ -36,33 +35,33 @@ const SORT_TYPES = {
 
 const SORT_VARIANTS = [
   {
-    type: SORT_TYPES.DAY,
+    type: SortType.DAY,
     state: 'checked',
     label: 'Day',
   },
   {
-    type: SORT_TYPES.EVENT,
+    type: SortType.EVENT,
     state: 'disabled',
     label: 'Event',
   },
   {
-    type: SORT_TYPES.TIME,
+    type: SortType.TIME,
     state: null,
     label: 'Time',
   },
   {
-    type: SORT_TYPES.PRICE,
+    type: SortType.PRICE,
     state: null,
     label: 'Price',
   },
   {
-    type: SORT_TYPES.OFFERS,
+    type: SortType.OFFERS,
     state: 'disabled',
     label: 'Offers',
   },
 ];
 
-const FILTERS_TYPES = {
+const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PRESENT: 'present',
@@ -71,129 +70,94 @@ const FILTERS_TYPES = {
 
 const FILTER_VARIANTS = [
   {
-    type: FILTERS_TYPES.EVERYTHING,
+    type: FilterType.EVERYTHING,
     state: 'checked',
     label: 'Everything',
   },
   {
-    type: FILTERS_TYPES.FUTURE,
+    type: FilterType.FUTURE,
     state: null,
     label: 'Future',
   },
   {
-    type: FILTERS_TYPES.PRESENT,
+    type: FilterType.PRESENT,
     state: null,
     label: 'Present',
   },
   {
-    type: FILTERS_TYPES.PAST,
+    type: FilterType.PAST,
     state: null,
     label: 'Past',
   },
 ];
 
-const OFFER_VARIANTS = [
-  {
-    type: 'luggage',
-    price: '30',
-    label: 'Add luggage',
-    state: 'checked',
-  },
-  {
-    type: 'comfort',
-    price: '100',
-    label: 'Switch to comfort class',
-    state: 'checked',
-  },
-  {
-    type: 'meal',
-    price: '15',
-    label: 'Add meal',
-    state: null,
-  },
-  {
-    type: 'seats',
-    price: '5',
-    label: 'Choose seats',
-    state: null,
-  },
-  {
-    type: 'train',
-    price: '40',
-    label: 'Travel by train',
-    state: null,
-  },
-];
-
 const EMPTY_LIST_MESSAGE_BY_FILTERS_MAP = {
-  [FILTERS_TYPES.EVERYTHING]: 'Click New Event to create your first point',
-  [FILTERS_TYPES.FUTURE]: 'There are no future events now',
-  [FILTERS_TYPES.PRESENT]: 'There are no present events now',
-  [FILTERS_TYPES.PAST]: 'There are no past events now',
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.PAST]: 'There are no past events now',
 };
 
-const POINT_MODE = {
+const PointMode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
 };
 
-const UPDATE_TYPE = {
+const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
 };
 
-const ACTION_TYPE = {
+const ActionType = {
   UPDATE_POINT: 'UPDATE_POINT',
   ADD_POINT: 'ADD_POINT',
   DELETE_POINT: 'DELETE_POINT',
 };
 
-const METHOD = {
+const Method = {
   GET: 'GET',
   PUT: 'PUT',
   POST: 'POST',
   DELETE: 'DELETE',
 };
 
-const SOURCE_URL = {
+const SourceUrl = {
   POINTS: 'points',
   OFFERS: 'offers',
   DESTINATIONS: 'destinations',
 };
 
-const TIME_LIMIT = {
+const TimeLimit = {
   LOWER_LIMIT: 300,
   UPPER_LIMIT: 1000,
+};
+
+const EditType = {
+  EDITING: 'EDITING',
+  CREATING: 'CREATING',
 };
 
 const AUTHORIZATION = 'Basic fjgndfkkzn54kkl6m6';
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 
 export {
+  DateFormat,
   POINT_TYPES,
-  FULL_DATE_FORMAT,
-  DATEPICKER_DATE_FORMAT,
-  HOURS_MINUTES_FORMAT,
-  MINUTES_FORMAT,
-  MINUTES_IN_HOUR,
-  MONTH_DAY_FORMAT,
-  MONTH_FORMAT,
   MAIN_EVENT,
   SORT_VARIANTS,
   FILTER_VARIANTS,
-  OFFER_VARIANTS,
   EMPTY_LIST_MESSAGE_BY_FILTERS_MAP,
-  POINT_MODE,
-  FILTERS_TYPES,
-  SORT_TYPES,
-  UPDATE_TYPE,
-  ACTION_TYPE,
-  METHOD,
-  SOURCE_URL,
-  TIME_LIMIT,
+  PointMode,
+  FilterType,
+  SortType,
+  UpdateType,
+  ActionType,
+  Method,
+  SourceUrl,
+  TimeLimit,
   AUTHORIZATION,
   END_POINT,
-  HOURS_IN_DAY,
+  EditType,
 };

@@ -11,7 +11,7 @@ export default class DestinationsModel {
     return this.#destinations;
   }
 
-  get() {
+  getDestinations() {
     return this.#destinations;
   }
 }
