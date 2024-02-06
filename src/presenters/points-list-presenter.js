@@ -8,7 +8,7 @@ import AddPointPresenter from './add-point-presenter';
 import Loader from '../view/loader';
 import PointPresenter from './point-presenter';
 import { ACTION_TYPE, UPDATE_TYPE, TIME_LIMIT, FILTERS_TYPES, SORT_TYPES } from '../const.js';
-import { sortPointsListByType, getCheckedSortVariant, isSortVariantDisabled, filterPoints } from '../utils.js';
+import { sortPointsListByType, getDefaultSortVariant, isSortVariantDisabled, filterPoints } from '../utils.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 export default class PointsListPresenter {
@@ -38,7 +38,6 @@ export default class PointsListPresenter {
     this.#sortsModel = sortsModel;
     this.#filtersModel = filtersModel;
     this.#addButtonPresenter = addButtonPresenter;
-    this.#currentSortType = this.#sortsModel.selectedSort.type;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filtersModel.addObserver(this.#handleModelEvent);
@@ -47,6 +46,7 @@ export default class PointsListPresenter {
 
   get points() {
     this.#currentFilterType = this.#filtersModel.selectedFilter.type;
+    this.#currentSortType = this.#sortsModel.selectedSort.type;
     const points = this.#pointsModel?.get();
     const filteredTasks = filterPoints(points, this.#currentFilterType);
     const sortedPoints = sortPointsListByType(filteredTasks, this.#currentSortType);
@@ -104,7 +104,7 @@ export default class PointsListPresenter {
 
   #renderPoint(point) {
     const destinations = this.#destinationsModel.get();
-    const offers = this.#offersModel.getOffersByType(point.type);
+    const offers = this.#offersModel.get();
 
     const pointPresenter = new PointPresenter({
       container: this.#pointsList.element,
@@ -127,7 +127,7 @@ export default class PointsListPresenter {
       case ACTION_TYPE.UPDATE_POINT:
         this.#pointPresenters[updatedPointData.id].setSaving();
         try {
-          await this.#pointsModel.update(updateType, updatedPointData);
+          await this.#pointsModel.updatePoint(updateType, updatedPointData);
         } catch (error) {
           this.#pointPresenters[updatedPointData.id].setAborting();
         }
@@ -135,7 +135,7 @@ export default class PointsListPresenter {
       case ACTION_TYPE.ADD_POINT:
         this.#addPointPresenter.setSaving();
         try {
-          await this.#pointsModel.add(updateType, updatedPointData);
+          await this.#pointsModel.addPoint(updateType, updatedPointData);
 
           this.#addPointPresenter.destroy({isCanceled: false});
         } catch (error) {
@@ -145,7 +145,7 @@ export default class PointsListPresenter {
       case ACTION_TYPE.DELETE_POINT:
         this.#pointPresenters[updatedPointData.id].setRemove();
         try {
-          await this.#pointsModel.delete(updateType, updatedPointData);
+          await this.#pointsModel.deletePoint(updateType, updatedPointData);
         } catch (error) {
           this.#pointPresenters[updatedPointData.id].setAborting();
         }
@@ -184,7 +184,7 @@ export default class PointsListPresenter {
     if (selectedType === this.#currentSortType || isSortVariantDisabled(selectedType)) {
       return;
     }
-
+  
     this.#sortsModel.selectSort(UPDATE_TYPE.MINOR, selectedType);
     this.#currentSortType = this.#sortsModel.selectedSort.type;
   };
@@ -198,10 +198,19 @@ export default class PointsListPresenter {
     remove(this.#emptyListMessage);
 
     if (resetSort) {
-      this.#currentSortType = getCheckedSortVariant().type;
+      this.resetSort();
       this.#currentFilterType = null;
     }
   }
+
+  resetSort = () => {
+    const defaultSort = getDefaultSortVariant().type;
+    if (defaultSort === this.#currentSortType) {
+      return;
+    }
+
+    this.#sortsModel.selectSort(UPDATE_TYPE.MINOR, defaultSort);
+  };
 
   handleAddEventButtonClick = () => {
     if (this.#addPointPresenter) {

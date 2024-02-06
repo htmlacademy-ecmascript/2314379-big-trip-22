@@ -13,6 +13,7 @@ export default class PointPresenter {
   #onDataChange = null;
   #pointComponent = null;
   #pointEditorComponent = null;
+  #point = null;
 
   constructor({ container, destinations, offers, onDataChange, onModeChange }) {
     this.#container = container;
@@ -23,6 +24,7 @@ export default class PointPresenter {
   }
 
   init(point) {
+    this.#point = point;
     const prevComponent = this.#pointComponent;
     const prevEditorComponent = this.#pointEditorComponent;
 
@@ -63,9 +65,8 @@ export default class PointPresenter {
     document.addEventListener('keydown', this.#escKeydownHandler);
   };
 
-  #formSubmitHandler = (point) => {
+  #formSubmitHandler = async (point) => {
     this.#onDataChange(ACTION_TYPE.UPDATE_POINT, UPDATE_TYPE.MINOR, point);
-    this.#replaceEditorToPoint();
   };
 
   #pointDeleteHandler = (point) => {
@@ -106,6 +107,7 @@ export default class PointPresenter {
     if (this.#mode === POINT_MODE.DEFAULT) {
       return;
     }
+    this.#pointEditorComponent.reset(this.#point);
     this.#replaceEditorToPoint();
   }
 
@@ -125,7 +127,7 @@ export default class PointPresenter {
 
   setAborting = () => {
     if (this.#mode === POINT_MODE.DEFAULT) {
-      this.#pointEditorComponent.shake();
+      this.#pointComponent.shake();
     }
 
     if (this.#mode === POINT_MODE.EDITING) {

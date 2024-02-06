@@ -1,4 +1,4 @@
-const EVENT_TYPES = [
+const POINT_TYPES = [
   'taxi',
   'bus',
   'train',
@@ -17,6 +17,7 @@ const MONTH_DAY_FORMAT = 'D';
 const HOURS_MINUTES_FORMAT = 'HH:mm';
 const MINUTES_FORMAT = 'm';
 const MINUTES_IN_HOUR = 60;
+const HOURS_IN_DAY = 24;
 
 const MAIN_EVENT = {
   LABEL: 'Amsterdam &mdash; Chamonix &mdash; Geneva',
@@ -167,8 +168,11 @@ const TIME_LIMIT = {
   UPPER_LIMIT: 1000,
 };
 
+const AUTHORIZATION = 'Basic fjgndfkkzn54kkl6m6';
+const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
+
 export {
-  EVENT_TYPES,
+  POINT_TYPES,
   FULL_DATE_FORMAT,
   DATEPICKER_DATE_FORMAT,
   HOURS_MINUTES_FORMAT,
@@ -189,4 +193,7 @@ export {
   METHOD,
   SOURCE_URL,
   TIME_LIMIT,
+  AUTHORIZATION,
+  END_POINT,
+  HOURS_IN_DAY,
 };

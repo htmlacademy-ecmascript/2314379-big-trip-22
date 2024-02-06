@@ -8,10 +8,12 @@ export default class FilterPresenter {
   #pointFilters = null;
   #renderPosition = RenderPosition.AFTERBEGIN;
   #container = null;
+  #onFilterChange = null;
 
-  constructor(container, filtersModel) {
+  constructor({ container, filtersModel, onFilterChange }) {
     this.#container = container;
     this.#filterModel = filtersModel;
+    this.#onFilterChange = onFilterChange;
 
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -26,6 +28,7 @@ export default class FilterPresenter {
 
   #filterChangeHandler = (selectedType) => {
     this.#filterModel.selectFilter(UPDATE_TYPE.MINOR, selectedType);
+    this.#onFilterChange();
   };
 
   #handleModelEvent = () => {

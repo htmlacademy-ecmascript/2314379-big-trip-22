@@ -1,12 +1,12 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { EVENT_TYPES, FULL_DATE_FORMAT, DATEPICKER_DATE_FORMAT } from '../const.js';
+import { POINT_TYPES, FULL_DATE_FORMAT, DATEPICKER_DATE_FORMAT } from '../const.js';
 import { capitalizeFirstLetter, humanizeDate } from '../utils.js';
 import flatpickr from 'flatpickr';
 
 function createAddEventFormTemplate({ state, availableDestinations, availableOffers }) {
   const { basePrice, dateFrom, dateTo, destination, offers, type } = state;
 
-  const eventTypeItems = EVENT_TYPES.map((eventType) => (`
+  const eventTypeItems = POINT_TYPES.map((eventType) => (`
     <div class="event__type-item">
       <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}">
       <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${capitalizeFirstLetter(eventType)}</label>
@@ -62,9 +62,10 @@ function createAddEventFormTemplate({ state, availableDestinations, availableOff
           <label class="event__label  event__type-output" for="event-destination-${destination?.id ?? '0'}">
             ${eventName}
           </label>
-          <select class="event__input  event__input--destination" id="event-destination-${destination?.id ?? '0'}" name="event-destination" value="${destination?.name ?? ''}">
+          <input class="event__input  event__input--destination" id="event-destination-${destination?.id ?? '0'}" type="text" name="event-destination" value="${destination?.name ?? ''}" list="destination-list-${destination?.id ?? '0'}">
+          <datalist id="destination-list-${destination?.id ?? '0'}">
             ${destinationItems}
-          </select>
+          </datalist>
         </div>
 
         <div class="event__field-group  event__field-group--time">

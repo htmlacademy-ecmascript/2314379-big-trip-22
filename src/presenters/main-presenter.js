@@ -8,13 +8,12 @@ import FiltersModel from '../model/filters-model';
 import SortsModel from '../model/sort-model';
 import OffersModel from '../model/offers-model';
 import DestinationsModel from '../model/destinations-model';
+import { END_POINT, AUTHORIZATION } from '../const';
 
 const headerMainBlock = document.querySelector('.trip-main');
 const filtersBlock = document.querySelector('.trip-controls__filters');
 const pointsBlock = document.querySelector('.trip-events');
 
-const AUTHORIZATION = 'Basic fjgndfkkzn54kkl6m6';
-const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
 const pointApiService = new PointsApiService(END_POINT, AUTHORIZATION);
 
 const destinationsModel = new DestinationsModel(pointApiService);
@@ -28,10 +27,9 @@ const filtersModel = new FiltersModel();
 const sortsModel = new SortsModel();
 
 const headerPresenter = new HeaderPresenter(headerMainBlock);
-const filterPresenter = new FilterPresenter(filtersBlock, filtersModel);
 const addButtonPresenter = new AddPointButtonPresenter(headerMainBlock);
 const pointsListPresenter = new PointsListPresenter({ container: pointsBlock, destinationsModel, offersModel, pointsModel, sortsModel, filtersModel, addButtonPresenter });
-
+const filterPresenter = new FilterPresenter({ container: filtersBlock, filtersModel, onFilterChange: pointsListPresenter.resetSort });
 
 export default class MainPresenter {
   init() {

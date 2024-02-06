@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
-import { MINUTES_IN_HOUR, MINUTES_FORMAT, SORT_TYPES, SORT_VARIANTS, FILTERS_TYPES } from './const';
+import duration from 'dayjs/plugin/duration';
+import { MINUTES_IN_HOUR, HOURS_IN_DAY, MINUTES_FORMAT, SORT_TYPES, SORT_VARIANTS, FILTERS_TYPES } from './const';
+
+dayjs.extend(duration);
 
 function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
@@ -16,26 +19,24 @@ function humanizeDate(date, format) {
 }
 
 function getTimeRange(dateFrom, dateTo) {
-  const rangeInMinutes = dayjs(dateTo).diff(dateFrom, MINUTES_FORMAT);
+  const diff = dayjs(dateTo).diff(dayjs(dateFrom));
+  const eventTimeRange = dayjs.duration(diff);
 
-  if (rangeInMinutes < MINUTES_IN_HOUR) {
-    return `${rangeInMinutes}M`;
+  if (eventTimeRange.days()) {
+    return eventTimeRange.format('DD[D] HH[H] mm[m]');
   }
 
-  const hoursInRange = Math.floor(rangeInMinutes / MINUTES_IN_HOUR);
-  const remainingMinutes = rangeInMinutes - hoursInRange * MINUTES_IN_HOUR;
-
-  if (!remainingMinutes) {
-    return `${hoursInRange}H`;
+  if (eventTimeRange.hours()) {
+    return eventTimeRange.format('HH[H] mm[m]');
   }
 
-  return `${hoursInRange}H ${remainingMinutes}M`;
+  return eventTimeRange.format('mm[m]');
 }
 
 export { getRandomArrayElement, capitalizeFirstLetter, humanizeDate, getTimeRange };
 
-export function getCheckedSortVariant() {
-  return SORT_VARIANTS.find((variant) => variant.state === 'checked');
+export function getDefaultSortVariant() {
+  return SORT_VARIANTS.find((variant) => variant.type === SORT_TYPES.DAY);
 }
 
 export function isSortVariantDisabled(variantType) {

@@ -7,7 +7,8 @@ function createPointTemplate(point, availableDestinations, availableOffers) {
   const { type, destination, dateFrom, dateTo, basePrice, offers, isFavorite } = point;
 
   const selectedDestination = availableDestinations.find((availableDestination) => availableDestination.id === destination);
-  const selectedOffers = availableOffers.filter((offerByType) => offers.includes(offerByType.id));
+  const offersByType = availableOffers.find((offer) => offer.type === type).offers;
+  const selectedOffers = offersByType.filter((offerByType) => offers.includes(offerByType.id));
   const pointDate = `${humanizeDate(dateFrom, MONTH_FORMAT).toUpperCase()} ${humanizeDate(dateFrom, MONTH_DAY_FORMAT)}`;
   const pointTitle = `${capitalizeFirstLetter(type)} ${he.encode(String(selectedDestination.name))}`;
   const timeFrom = humanizeDate(dateFrom, HOURS_MINUTES_FORMAT);
