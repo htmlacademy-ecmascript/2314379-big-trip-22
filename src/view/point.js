@@ -1,24 +1,41 @@
 import { capitalizeFirstLetter, humanizeDate, getTimeRange } from '../utils';
-import { MONTH_FORMAT, MONTH_DAY_FORMAT, HOURS_MINUTES_FORMAT } from '../const';
+import { DateFormat } from '../const';
 import AbstractView from '../framework/view/abstract-view.js';
 import he from 'he';
 
-function createPointTemplate(point, availableDestinations, availableOffers) {
-  const { type, destination, dateFrom, dateTo, basePrice, offers, isFavorite } = point;
-
-  const selectedDestination = availableDestinations.find((availableDestination) => availableDestination.id === destination);
-  const selectedOffers = availableOffers.filter((offerByType) => offers.includes(offerByType.id));
-  const pointDate = `${humanizeDate(dateFrom, MONTH_FORMAT).toUpperCase()} ${humanizeDate(dateFrom, MONTH_DAY_FORMAT)}`;
-  const pointTitle = `${capitalizeFirstLetter(type)} ${he.encode(String(selectedDestination.name))}`;
-  const timeFrom = humanizeDate(dateFrom, HOURS_MINUTES_FORMAT);
-  const timeTo = humanizeDate(dateTo, HOURS_MINUTES_FORMAT);
+function createOffersList(selectedOffers) {
   const offersList = selectedOffers?.map((offer) => (`
     <li class="event__offer">
       <span class="event__offer-title">${he.encode(String(offer.title))}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${he.encode(String(offer.price))}</span>
-    </li>`
-  )).join('');
+    </li>
+  `)).join('');
+
+  return `
+    <ul class="event__selected-offers">
+      ${offersList}
+    </ul>
+  `;
+}
+
+function createPointTemplate(point, availableDestinations, availableOffers) {
+  const { type, destination, dateFrom, dateTo, basePrice, offers, isFavorite } = point;
+
+  const selectedDestination = availableDestinations.find((availableDestination) => availableDestination.id === destination);
+
+  const offersByType = availableOffers.find((offer) => offer.type === type).offers;
+  const selectedOffers = offersByType.filter((offerByType) => offers.includes(offerByType.id));
+
+  const totalPrice = selectedOffers.reduce((sum, selectedOffer) => {
+    sum += Number(selectedOffer.price);
+    return sum;
+  }, Number(basePrice));
+
+  const pointDate = `${humanizeDate(dateFrom, DateFormat.MONTH_FORMAT).toUpperCase()} ${humanizeDate(dateFrom, DateFormat.MONTH_DAY_FORMAT)}`;
+  const pointTitle = `${capitalizeFirstLetter(type)} ${he.encode(String(selectedDestination.name))}`;
+  const timeFrom = humanizeDate(dateFrom, DateFormat.HOURS_MINUTES_FORMAT);
+  const timeTo = humanizeDate(dateTo, DateFormat.HOURS_MINUTES_FORMAT);
 
   return (`
     <li class="trip-events__item">
@@ -37,12 +54,10 @@ function createPointTemplate(point, availableDestinations, availableOffers) {
           <p class="event__duration">${getTimeRange(dateFrom, dateTo)}</p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+          &euro;&nbsp;<span class="event__price-value">${totalPrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
-        <ul class="event__selected-offers">
-          ${offersList}
-        </ul>
+        ${createOffersList(selectedOffers)}
         <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -64,7 +79,7 @@ export default class Point extends AbstractView {
   #onEditClick = null;
   #onFavoriteClick = null;
 
-  constructor({point, destinations, offers, onEditClick, onFavoriteClick}) {
+  constructor({ point, destinations, offers, onEditClick, onFavoriteClick }) {
     super();
     this.#point = point;
     this.#destinations = destinations;

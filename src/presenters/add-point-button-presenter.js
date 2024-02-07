@@ -13,12 +13,12 @@ export default class AddPointButtonPresenter {
   init({ onButtonClick }) {
     this.#onButtonClick = onButtonClick;
     this.#buttonComponent = new AddPointButton({
-      onButtonClick: this.#handleButtonClick,
+      onButtonClick: this.#buttonClickHandler,
     });
     render(this.#buttonComponent, this.#container);
   }
 
-  #handleButtonClick = () => {
+  #buttonClickHandler = () => {
     this.#onButtonClick();
   };
 

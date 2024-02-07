@@ -7,8 +7,8 @@ import PointSortTypePresenter from './point-sort-type-presenter';
 import AddPointPresenter from './add-point-presenter';
 import Loader from '../view/loader';
 import PointPresenter from './point-presenter';
-import { ACTION_TYPE, UPDATE_TYPE, TIME_LIMIT, FILTERS_TYPES, SORT_TYPES } from '../const.js';
-import { sortPointsListByType, getCheckedSortVariant, isSortVariantDisabled, filterPoints } from '../utils.js';
+import { ActionType, UpdateType, TimeLimit, FilterType, SortType } from '../const.js';
+import { sortPointsListByType, getDefaultSortVariant, getIsSortVariantDisabled, filterPoints } from '../utils.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 export default class PointsListPresenter {
@@ -28,7 +28,7 @@ export default class PointsListPresenter {
   #currentSortType = null;
   #addButtonPresenter = null;
   #addPointPresenter = null;
-  #uiBlocker = new UiBlocker({lowerLimit: TIME_LIMIT.LOWER_LIMIT, upperLimit: TIME_LIMIT.UPPER_LIMIT});
+  #uiBlocker = new UiBlocker({lowerLimit: TimeLimit.LOWER_LIMIT, upperLimit: TimeLimit.UPPER_LIMIT});
 
   constructor({ container, destinationsModel, offersModel, pointsModel, sortsModel, filtersModel, addButtonPresenter }) {
     this.#container = container;
@@ -38,18 +38,16 @@ export default class PointsListPresenter {
     this.#sortsModel = sortsModel;
     this.#filtersModel = filtersModel;
     this.#addButtonPresenter = addButtonPresenter;
-    this.#currentSortType = this.#sortsModel.selectedSort.type;
 
-    this.#pointsModel.addObserver(this.#handleModelEvent);
-    this.#filtersModel.addObserver(this.#handleModelEvent);
-    this.#sortsModel.addObserver(this.#handleModelEvent);
+    this.#pointsModel.addObserver(this.#modelEventHandler);
+    this.#filtersModel.addObserver(this.#modelEventHandler);
+    this.#sortsModel.addObserver(this.#modelEventHandler);
   }
 
   get points() {
-    this.#currentFilterType = this.#filtersModel.selectedFilter.type;
-    const points = this.#pointsModel?.get();
-    const filteredTasks = filterPoints(points, this.#currentFilterType);
-    const sortedPoints = sortPointsListByType(filteredTasks, this.#currentSortType);
+    const points = this.#pointsModel?.getPoints();
+    const filteredPoints = filterPoints(points, this.#currentFilterType);
+    const sortedPoints = sortPointsListByType(filteredPoints, this.#currentSortType, this.#offersModel.getOffers());
     return sortedPoints;
   }
 
@@ -70,12 +68,15 @@ export default class PointsListPresenter {
     const sortTypePresenter = new PointSortTypePresenter({
       container: this.#pointSortTypeList.element,
       sortTypeData,
-      onSortTypeChange: this.#handleSortTypeChange,
+      onSortTypeChange: this.#sortTypeChangeHandler,
     });
     sortTypePresenter.init();
   }
 
   #renderPointsList() {
+    this.#currentFilterType = this.#filtersModel.selectedFilter.type;
+    this.#currentSortType = this.#sortsModel.selectedSort.type;
+
     if (this.#isLoading) {
       this.#addButtonPresenter.disableButton();
       this.#renderLoading();
@@ -103,15 +104,16 @@ export default class PointsListPresenter {
   }
 
   #renderPoint(point) {
-    const destinations = this.#destinationsModel.get();
-    const offers = this.#offersModel.getOffersByType(point.type);
+    const destinations = this.#destinationsModel.getDestinations();
+    const offers = this.#offersModel.getOffers();
 
     const pointPresenter = new PointPresenter({
       container: this.#pointsList.element,
       destinations,
       offers,
-      onDataChange: this.#handleViewAction,
-      onModeChange: this.#handlePointModeChange,
+      onEditorOpen: this.#editorOpenHandler,
+      onDataChange: this.#viewActionHandler,
+      onModeChange: this.#pointModeChangeHandler,
     });
     pointPresenter.init(point);
     this.#pointPresenters[point.id] = pointPresenter;
@@ -121,31 +123,38 @@ export default class PointsListPresenter {
     render(this.#loadingComponent, this.#container);
   }
 
-  #handleViewAction = async (actionType, updateType, updatedPointData) => {
+  #editorOpenHandler = () => {
+    if (this.#addPointPresenter) {
+      this.#addFormCancelHandler();
+    }
+  };
+
+  #viewActionHandler = async (actionType, updateType, updatedPointData) => {
     this.#uiBlocker.block();
     switch (actionType) {
-      case ACTION_TYPE.UPDATE_POINT:
+      case ActionType.UPDATE_POINT:
         this.#pointPresenters[updatedPointData.id].setSaving();
         try {
-          await this.#pointsModel.update(updateType, updatedPointData);
+          await this.#pointsModel.updatePoint(updateType, updatedPointData);
         } catch (error) {
           this.#pointPresenters[updatedPointData.id].setAborting();
         }
         break;
-      case ACTION_TYPE.ADD_POINT:
+      case ActionType.ADD_POINT:
         this.#addPointPresenter.setSaving();
         try {
-          await this.#pointsModel.add(updateType, updatedPointData);
+          await this.#pointsModel.addPoint(updateType, updatedPointData);
 
           this.#addPointPresenter.destroy({isCanceled: false});
         } catch (error) {
           this.#addPointPresenter.setAborting();
+          this.#addButtonPresenter.enableButton();
         }
         break;
-      case ACTION_TYPE.DELETE_POINT:
+      case ActionType.DELETE_POINT:
         this.#pointPresenters[updatedPointData.id].setRemove();
         try {
-          await this.#pointsModel.delete(updateType, updatedPointData);
+          await this.#pointsModel.deletePoint(updateType, updatedPointData);
         } catch (error) {
           this.#pointPresenters[updatedPointData.id].setAborting();
         }
@@ -154,20 +163,20 @@ export default class PointsListPresenter {
     this.#uiBlocker.unblock();
   };
 
-  #handleModelEvent = (updateType, updatedPointData) => {
+  #modelEventHandler = (updateType, updatedPointData) => {
     switch (updateType) {
-      case UPDATE_TYPE.PATCH:
+      case UpdateType.PATCH:
         this.#pointPresenters[updatedPointData.id].init(updatedPointData);
         break;
-      case UPDATE_TYPE.MINOR:
+      case UpdateType.MINOR:
         this.#clearPointsList();
         this.#renderPointsList();
         break;
-      case UPDATE_TYPE.MAJOR:
+      case UpdateType.MAJOR:
         this.#clearPointsList(true);
         this.#renderPointsList();
         break;
-      case UPDATE_TYPE.INIT:
+      case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderPointsList();
@@ -175,17 +184,17 @@ export default class PointsListPresenter {
     }
   };
 
-  #handlePointModeChange = () => {
+  #pointModeChangeHandler = () => {
     const allPresentersArray = Object.values(this.#pointPresenters);
     allPresentersArray.forEach((presenter) => presenter.resetView());
   };
 
-  #handleSortTypeChange = (selectedType) => {
-    if (selectedType === this.#currentSortType || isSortVariantDisabled(selectedType)) {
+  #sortTypeChangeHandler = (selectedType) => {
+    if (selectedType === this.#currentSortType || getIsSortVariantDisabled(selectedType)) {
       return;
     }
 
-    this.#sortsModel.selectSort(UPDATE_TYPE.MINOR, selectedType);
+    this.#sortsModel.selectSort(UpdateType.MINOR, selectedType);
     this.#currentSortType = this.#sortsModel.selectedSort.type;
   };
 
@@ -198,47 +207,55 @@ export default class PointsListPresenter {
     remove(this.#emptyListMessage);
 
     if (resetSort) {
-      this.#currentSortType = getCheckedSortVariant().type;
+      this.resetSort();
       this.#currentFilterType = null;
     }
   }
 
-  handleAddEventButtonClick = () => {
+  resetSort = () => {
+    const defaultSort = getDefaultSortVariant().type;
+    if (defaultSort === this.#currentSortType) {
+      return;
+    }
+
+    this.#sortsModel.selectSort(UpdateType.MINOR, defaultSort);
+  };
+
+  addEventButtonClickHandler = () => {
     if (this.#addPointPresenter) {
       return;
     }
 
     this.#addPointPresenter = new AddPointPresenter({
       container: this.#pointsList.element,
-      destinations: this.#destinationsModel.get(),
-      offers: this.#offersModel.get(),
-      onAddFormOpen: this.#handleAddFormOpen,
-      onEventCreate: this.#handleEventAdd,
-      handleFormCancel: this.#handleAddFormCancel,
+      destinations: this.#destinationsModel.getDestinations(),
+      offers: this.#offersModel.getOffers(),
+      onAddFormOpen: this.#addFormOpenHandler,
+      onEventCreate: this.#eventAddHandler,
+      onFormCancel: this.#addFormCancelHandler,
+      onDestroy: this.#addPointDestroyHandler,
     });
 
     this.#addPointPresenter.init();
   };
 
-  #handleAddFormCancel = () => {
+  #addFormCancelHandler = () => {
     this.#addButtonPresenter.enableButton();
     this.#addPointPresenter.removeComponent();
     this.#addPointPresenter = null;
   };
 
-  #handleEventAdd = (data) => {
-    const newPointData = { ...data, id: String(this.points.length + 1) };
-    this.#handleViewAction(ACTION_TYPE.ADD_POINT, UPDATE_TYPE.MAJOR, newPointData);
-    this.#addPointPresenter.removeComponent();
-    this.#addPointPresenter = null;
+  #eventAddHandler = (data) => {
+    const newPointData = { ...data };
+    this.#viewActionHandler(ActionType.ADD_POINT, UpdateType.MINOR, newPointData);
   };
 
-  #handleAddFormOpen = () => {
+  #addFormOpenHandler = () => {
     this.#addButtonPresenter.disableButton();
-    if (this.#currentFilterType !== FILTERS_TYPES.EVERYTHING) {
-      this.#filtersModel.selectFilter(UPDATE_TYPE.MINOR, FILTERS_TYPES.EVERYTHING);
+    if (this.#currentFilterType !== FilterType.EVERYTHING) {
+      this.#filtersModel.selectFilter(UpdateType.MINOR, FilterType.EVERYTHING);
     }
-    this.#handleSortTypeChange(SORT_TYPES.DAY);
+    this.#sortTypeChangeHandler(SortType.DAY);
     document.addEventListener('keydown', this.#escKeydownHandler);
     const allPresentersArray = Object.values(this.#pointPresenters);
     allPresentersArray.forEach((presenter) => presenter.resetView());
@@ -248,7 +265,14 @@ export default class PointsListPresenter {
     if (event.key !== 'Escape') {
       return;
     }
-    this.#handleAddFormCancel();
+    this.#addFormCancelHandler();
     document.removeEventListener('keydown', this.#escKeydownHandler);
+  };
+
+  #addPointDestroyHandler = (isCanceled) => {
+    if (!this.points.length && isCanceled) {
+      this.#clearPointsList();
+      this.#renderPointsList();
+    }
   };
 }

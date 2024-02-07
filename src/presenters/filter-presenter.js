@@ -1,19 +1,21 @@
 import { render, RenderPosition } from '../render';
 import { remove } from '../framework/render.js';
 import PointFilters from '../view/point-filters';
-import { UPDATE_TYPE } from '../const.js';
+import { UpdateType } from '../const.js';
 
 export default class FilterPresenter {
   #filterModel = null;
   #pointFilters = null;
   #renderPosition = RenderPosition.AFTERBEGIN;
   #container = null;
+  #onFilterChange = null;
 
-  constructor(container, filtersModel) {
+  constructor({ container, filtersModel, onFilterChange }) {
     this.#container = container;
     this.#filterModel = filtersModel;
+    this.#onFilterChange = onFilterChange;
 
-    this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#modelEventHandler);
   }
 
   init() {
@@ -25,10 +27,11 @@ export default class FilterPresenter {
   }
 
   #filterChangeHandler = (selectedType) => {
-    this.#filterModel.selectFilter(UPDATE_TYPE.MINOR, selectedType);
+    this.#filterModel.selectFilter(UpdateType.MINOR, selectedType);
+    this.#onFilterChange();
   };
 
-  #handleModelEvent = () => {
+  #modelEventHandler = () => {
     this.#removePointFilters();
     this.init();
   };

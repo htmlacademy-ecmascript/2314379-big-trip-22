@@ -16,13 +16,13 @@ export default class PointSortTypePresenter {
   init() {
     this.#pointSortTypeComponent = new PointSortType({
       sortTypeData: this.#sortTypeData,
-      onSortTypeClick: this.#handleSortTypeClick,
+      onSortTypeClick: this.#sortTypeClickHandler,
     });
 
     render(this.#pointSortTypeComponent, this.#container);
   }
 
-  #handleSortTypeClick = () => {
+  #sortTypeClickHandler = () => {
     this.#onSortTypeChange(this.#sortTypeData.type);
   };
 }

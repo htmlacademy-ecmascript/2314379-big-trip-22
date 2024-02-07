@@ -1,6 +1,6 @@
 import { adaptToClient, updateItem, adaptToServer } from '../utils';
 import Observable from '../framework/observable';
-import { UPDATE_TYPE } from '../const';
+import { UpdateType } from '../const';
 
 export default class PointsModel extends Observable {
   #service = null;
@@ -20,14 +20,14 @@ export default class PointsModel extends Observable {
       await Promise.all([this.#destinationsModel.init(), this.#offersModel.init()]);
       const points = await this.#service.points;
       this.#points = points.map(adaptToClient);
-      this._notify(UPDATE_TYPE.INIT, {isError: false});
+      this._notify(UpdateType.INIT, {isError: false});
     } catch (error) {
       this.#points = [];
-      this._notify(UPDATE_TYPE.INIT, {isError: true});
+      this._notify(UpdateType.INIT, {isError: true});
     }
   }
 
-  get() {
+  getPoints() {
     return this.#points;
   }
 
