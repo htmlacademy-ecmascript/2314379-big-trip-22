@@ -28,6 +28,7 @@ export default class PointsListPresenter {
   #currentSortType = null;
   #addButtonPresenter = null;
   #addPointPresenter = null;
+  #isDataLoadingFailed = false;
   #uiBlocker = new UiBlocker({lowerLimit: TimeLimit.LOWER_LIMIT, upperLimit: TimeLimit.UPPER_LIMIT});
 
   constructor({ container, destinationsModel, offersModel, pointsModel, sortsModel, filtersModel, addButtonPresenter }) {
@@ -47,7 +48,7 @@ export default class PointsListPresenter {
   get points() {
     const points = this.#pointsModel?.getPoints();
     const filteredPoints = filterPoints(points, this.#currentFilterType);
-    const sortedPoints = sortPointsListByType(filteredPoints, this.#currentSortType, this.#offersModel.getOffers());
+    const sortedPoints = sortPointsListByType(filteredPoints, this.#currentSortType, this.offers);
     return sortedPoints;
   }
 
@@ -55,12 +56,23 @@ export default class PointsListPresenter {
     return this.#sortsModel.sorts;
   }
 
+  get destinations() {
+    return this.#destinationsModel.getDestinations();
+  }
+
+  get offers() {
+    return this.#offersModel.getOffers();
+  }
+
   init() {
     this.#renderPointsList();
   }
 
   #renderEmptyListMessage() {
-    this.#emptyListMessage = new EmptyListMessage();
+    this.#emptyListMessage = new EmptyListMessage({
+      isLoadFailed: this.#isDataLoadingFailed,
+      selectedFilter: this.#currentFilterType,
+    });
     render(this.#emptyListMessage, this.#pointsList.element);
   }
 
@@ -83,7 +95,9 @@ export default class PointsListPresenter {
       return;
     }
 
-    this.#addButtonPresenter.enableButton();
+    if (this.destinations.length || this.offers.length) {
+      this.#addButtonPresenter.enableButton();
+    }
     render(this.#pointsList, this.#container);
 
     if (!this.points?.length) {
@@ -104,13 +118,10 @@ export default class PointsListPresenter {
   }
 
   #renderPoint(point) {
-    const destinations = this.#destinationsModel.getDestinations();
-    const offers = this.#offersModel.getOffers();
-
     const pointPresenter = new PointPresenter({
       container: this.#pointsList.element,
-      destinations,
-      offers,
+      destinations: this.destinations,
+      offers: this.offers,
       onEditorOpen: this.#editorOpenHandler,
       onDataChange: this.#viewActionHandler,
       onModeChange: this.#pointModeChangeHandler,
@@ -177,6 +188,7 @@ export default class PointsListPresenter {
         this.#renderPointsList();
         break;
       case UpdateType.INIT:
+        this.#isDataLoadingFailed = updatedPointData.isError;
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderPointsList();
@@ -228,8 +240,8 @@ export default class PointsListPresenter {
 
     this.#addPointPresenter = new AddPointPresenter({
       container: this.#pointsList.element,
-      destinations: this.#destinationsModel.getDestinations(),
-      offers: this.#offersModel.getOffers(),
+      destinations: this.destinations,
+      offers: this.offers,
       onAddFormOpen: this.#addFormOpenHandler,
       onEventCreate: this.#eventAddHandler,
       onFormCancel: this.#addFormCancelHandler,
@@ -240,8 +252,8 @@ export default class PointsListPresenter {
   };
 
   #addFormCancelHandler = () => {
-    this.#addButtonPresenter.enableButton();
-    this.#addPointPresenter.removeComponent();
+    this.#addButtonPresenter?.enableButton();
+    this.#addPointPresenter?.removeComponent();
     this.#addPointPresenter = null;
   };
 
@@ -274,5 +286,7 @@ export default class PointsListPresenter {
       this.#clearPointsList();
       this.#renderPointsList();
     }
+
+    this.#addPointPresenter = null;
   };
 }

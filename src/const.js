@@ -98,6 +98,8 @@ const EMPTY_LIST_MESSAGE_BY_FILTERS_MAP = {
   [FilterType.PAST]: 'There are no past events now',
 };
 
+const FAILED_TO_LOAD_MESSAGE = 'Failed to load latest route information';
+
 const PointMode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
@@ -149,6 +151,7 @@ export {
   SORT_VARIANTS,
   FILTER_VARIANTS,
   EMPTY_LIST_MESSAGE_BY_FILTERS_MAP,
+  FAILED_TO_LOAD_MESSAGE,
   PointMode,
   FilterType,
   SortType,

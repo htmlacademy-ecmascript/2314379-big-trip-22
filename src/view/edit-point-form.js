@@ -108,12 +108,12 @@ function createEditPointFormTemplate({ state, availableDestinations, availableOf
   const { type, dateFrom, dateTo, offers, basePrice, destination, isSaving, isDeleting, isDisabled } = state;
   const isCreating = editorMode === EditType.CREATING;
   const eventName = capitalizeFirstLetter(type);
-  const selectedDestination = availableDestinations.find((availableDestination) => availableDestination.id === destination);
+  const selectedDestination = availableDestinations?.find((availableDestination) => availableDestination.id === destination);
 
   const humanizeDateFrom = dateFrom ? humanizeDate(dateFrom, DateFormat.FULL_DATE_FORMAT) : '';
   const humanizeDateTo = dateTo ? humanizeDate(dateTo, DateFormat.FULL_DATE_FORMAT) : '';
 
-  const offersByType = availableOffers.find((offer) => offer.type === type).offers;
+  const offersByType = availableOffers?.find((offer) => offer.type === type)?.offers;
 
   const photos = selectedDestination?.pictures;
   const isDestinationInfoAvailable = selectedDestination?.description || photos?.length > 0;
@@ -151,7 +151,7 @@ function createEditPointFormTemplate({ state, availableDestinations, availableOf
         ${createButtonTemplate({ isCreating, isSaving, isDeleting, isDisabled })}
       </header>
       <section class="event__details">
-        ${offersByType.length > 0 ? createOffersTemplate({ selectedOffers: offers, availableOffers: offersByType }) : ''}
+        ${offersByType?.length > 0 ? createOffersTemplate({ selectedOffers: offers, availableOffers: offersByType }) : ''}
         ${isDestinationInfoAvailable ? createDestinationInfoTemplate({ destinationDescription: selectedDestination?.description, photos }) : ''}
       </section>
     </form>
@@ -164,7 +164,7 @@ export default class EditPointForm extends AbstractStatefulView {
   #offers = null;
   #onCloseClick = null;
   #onFormSubmit = null;
-  #onDeleteButtonClick = null;
+  #deleteButtonClickHandler = null;
   #datepickerFrom = null;
   #datepickerTo = null;
   #editorMode = null;
@@ -178,21 +178,21 @@ export default class EditPointForm extends AbstractStatefulView {
     this.#offers = offers;
     this.#onCloseClick = onCloseClick;
     this.#onFormSubmit = onFormSubmit;
-    this.#onDeleteButtonClick = onPointDelete;
+    this.#deleteButtonClickHandler = onPointDelete;
     this._restoreHandlers();
   }
 
   _restoreHandlers() {
     if (this.#editorMode === EditType.EDITING) {
       this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeButtonClickHandler);
-      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteButtonClick);
+      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteButtonClickHandler);
     }
 
     if (this.#editorMode === EditType.CREATING) {
       this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCloseClick);
     }
 
-    this.element.querySelector('.event__save-btn').addEventListener('click', this.#formSubmitHandler);
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#saveButtonClickHandler);
     this.element.querySelector('.event__type-list').addEventListener('change', this.#pointTypeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#basePriceChangeHandler);
@@ -245,7 +245,7 @@ export default class EditPointForm extends AbstractStatefulView {
     this.#onCloseClick();
   };
 
-  #formSubmitHandler = (event) => {
+  #saveButtonClickHandler = (event) => {
     event.preventDefault();
     const updatedPoint = EditPointForm.parseStateToPoint(this._state);
     this.#onFormSubmit(updatedPoint);

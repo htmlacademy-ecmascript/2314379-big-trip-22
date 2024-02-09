@@ -18,7 +18,7 @@ function createPointsFiltersTemplate(filters) {
   return filterForm;
 }
 
-export default class tripFilters extends AbstractView {
+export default class PointFilters extends AbstractView {
   #filterModel = null;
   #onFilterChange = null;
 

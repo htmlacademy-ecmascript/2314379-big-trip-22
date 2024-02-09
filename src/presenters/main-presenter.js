@@ -2,10 +2,10 @@ import HeaderPresenter from './header-presenter';
 import FilterPresenter from './filter-presenter';
 import PointsListPresenter from './points-list-presenter';
 import AddPointButtonPresenter from './add-point-button-presenter';
-import PointsApiService from '../service/point-api-service';
+import PointsApiService from '../service/points-api-service';
 import PointsModel from '../model/points-model';
 import FiltersModel from '../model/filters-model';
-import SortsModel from '../model/sort-model';
+import SortsModel from '../model/sorts-model';
 import OffersModel from '../model/offers-model';
 import DestinationsModel from '../model/destinations-model';
 import { END_POINT, AUTHORIZATION } from '../const';
@@ -14,12 +14,12 @@ const headerMainBlock = document.querySelector('.trip-main');
 const filtersBlock = document.querySelector('.trip-controls__filters');
 const pointsBlock = document.querySelector('.trip-events');
 
-const pointApiService = new PointsApiService(END_POINT, AUTHORIZATION);
+const pointsApiService = new PointsApiService(END_POINT, AUTHORIZATION);
 
-const destinationsModel = new DestinationsModel(pointApiService);
-const offersModel = new OffersModel(pointApiService);
+const destinationsModel = new DestinationsModel(pointsApiService);
+const offersModel = new OffersModel(pointsApiService);
 const pointsModel = new PointsModel({
-  service: pointApiService,
+  service: pointsApiService,
   destinationsModel,
   offersModel,
 });
