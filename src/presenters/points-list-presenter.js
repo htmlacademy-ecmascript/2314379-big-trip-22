@@ -286,7 +286,7 @@ export default class PointsListPresenter {
       this.#clearPointsList();
       this.#renderPointsList();
     }
-    
+
     this.#addPointPresenter = null;
   };
 }
